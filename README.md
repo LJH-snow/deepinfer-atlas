@@ -2,24 +2,24 @@
 
 **DeepInfer 非官方可视化源码导读。**
 
-[English](README.en.md) · [阅读站点](site/index.html) · [源码阅读地图](site/source-map.html) · [版本与证据](docs/evidence.md)
+[English](README.en.md) · [阅读站点](https://ljh-snow.github.io/deepinfer-atlas/index.html) · [源码阅读地图](https://ljh-snow.github.io/deepinfer-atlas/source-map.html) · [版本与证据](docs/evidence.md)
 
 用约 10 分钟，建立从 `LLM.generate()` 到设备执行的源码地图。先看模块和请求流，再定位异步调度、DSpark 与开源边界；每个重要结论都能回到固定 commit 的源码或官方文档。
 
 ![deepinfer-atlas 阅读站点预览](site/assets/overview.png)
 
-这是一个独立的社区导读项目，与 DeepSeek 无隶属关系。**当前交付为本地可发布版本，尚未发布公网网站；上方“阅读站点”链接指向仓库内的预构建 HTML。** 下载仓库后可直接打开，也可按下文启动本地服务。没有为尚未创建的远程仓库编造在线地址。
+这是一个独立的社区导读项目，与 DeepSeek 无隶属关系。**[在线阅读](https://ljh-snow.github.io/deepinfer-atlas/) · [GitHub 仓库](https://github.com/LJH-snow/deepinfer-atlas)**。网站已通过 GitHub Pages 发布；也可下载仓库直接打开 `site/index.html`，或按下文启动本地服务。
 
 ## 从你的问题开始
 
 | 想回答的问题 | 阅读入口 |
 | --- | --- |
-| DeepInfer 解决什么问题？模块怎样协作？ | [架构总览](site/architecture.html) / [交互图](site/diagrams/architecture.html) |
-| 一次离线请求如何执行？ | [请求时序](site/request.html) / [交互图](site/diagrams/request.html) |
-| 开源了什么，完整线上服务还缺什么？ | [开源边界](site/scope.html) / [交互图](site/diagrams/scope.html) |
-| CPU / 设备异步、DSpark 怎样减少浪费？ | [性能优化](site/performance.html) |
-| 下一步从哪些文件、符号开始研究？ | [源码地图](site/source-map.html) |
-| 图里的箭头和结论是否可信？ | [版本与证据页](site/evidence.html) / [机器可读证据](data/evidence.json) |
+| DeepInfer 解决什么问题？模块怎样协作？ | [架构总览](https://ljh-snow.github.io/deepinfer-atlas/architecture.html) / [交互图](https://ljh-snow.github.io/deepinfer-atlas/diagrams/architecture.html) |
+| 一次离线请求如何执行？ | [请求时序](https://ljh-snow.github.io/deepinfer-atlas/request.html) / [交互图](https://ljh-snow.github.io/deepinfer-atlas/diagrams/request.html) |
+| 开源了什么，完整线上服务还缺什么？ | [开源边界](https://ljh-snow.github.io/deepinfer-atlas/scope.html) / [交互图](https://ljh-snow.github.io/deepinfer-atlas/diagrams/scope.html) |
+| CPU / 设备异步、DSpark 怎样减少浪费？ | [性能优化](https://ljh-snow.github.io/deepinfer-atlas/performance.html) |
+| 下一步从哪些文件、符号开始研究？ | [源码地图](https://ljh-snow.github.io/deepinfer-atlas/source-map.html) |
+| 图里的箭头和结论是否可信？ | [版本与证据页](https://ljh-snow.github.io/deepinfer-atlas/evidence.html) / [机器可读证据](data/evidence.json) |
 
 建议按“架构 2 分钟 → 请求 3 分钟 → 边界 2 分钟 → 优化 3 分钟”阅读。正文为中文，关键代码名保留英文；英文 README 可独立说明本项目价值与使用方式。
 
@@ -86,9 +86,9 @@ ARCHIFY_HOME=/path/to/archify python3 scripts/diagrams.py
 
 ## 部署与发布状态
 
-`site/` 和 `dist/` 都可由静态托管平台提供。仓库内的 [GitHub Pages 工作流](.github/workflows/pages.yml) 基于官方静态站点模板，部署 `site/`。创建远程仓库后，在 Settings → Pages 选择 GitHub Actions，再推送或手动运行工作流。
+`site/` 和 `dist/` 都可由静态托管平台提供。本仓库已启用 GitHub Pages；[部署工作流](.github/workflows/pages.yml) 基于官方静态站点模板，推送 `main` 后自动部署 `site/`，也可手动运行。
 
-本会话没有创建公开仓库、推送或对外发布的明确授权，因此目前**仅完成本地项目**。没有覆盖任何同名远程仓库。发布前应检查目标仓库是否已存在；成功部署后，把真实在线地址加入本 README 和英文版。
+已于 **2026-10-21** 按所有者授权创建并推送至公开仓库 [LJH-snow/deepinfer-atlas](https://github.com/LJH-snow/deepinfer-atlas)，完成 Pages 部署并检查线上资源。没有覆盖已有同名仓库。在线入口为 [https://ljh-snow.github.io/deepinfer-atlas/](https://ljh-snow.github.io/deepinfer-atlas/)；原始推理源码分析版本保持不变。
 
 [仓库简介、双语一句话、发布文案与技术文章选题](docs/release.md)已准备好。
 

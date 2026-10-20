@@ -9,7 +9,7 @@
 | 本地构建 | `python3 scripts/build.py` 成功；八个中文阅读页面、三个独立交互图；`site/` 与可部署 `dist/` 已生成；本机Chrome通过file协议直接打开首页截图，样式/图片正常。 |
 | 源码证据 | `python3 scripts/verify.py --require-upstream` 通过全部46条记录的路径、起止行、符号锚点、关键调用及文件/片段 SHA-256；覆盖24个文件。 |
 | 核心图证据 | 23个节点和19条关系均在 `data/diagram-map.json` 映射到有效证据，无漏项。 |
-| 本地资源与来源链接 | 11个HTML、218条本地引用、48条固定源码URL；无缺失资源和锚点。双语README及文档48条本地链接通过。固定URL与证据行号核对基于同一checkout，不声称逐条HTTP访问GitHub。 |
+| 本地资源与来源链接 | 11个HTML、218条本地引用、48条固定源码URL；无缺失资源和锚点。双语README及文档26条本地链接通过；22条阅读入口已改为真实Pages在线地址。固定URL与证据行号核对基于同一checkout，不声称逐条HTTP访问GitHub。 |
 | Archify 校验 | 三图均9/9 showcase；0 composition errors、0 warnings；最终spec与HTML摘要和原子交付收据一致。 |
 | 桌面容纳 | 三图在1440×900、1600×1000、1920×1080、2048×1320均无横向/纵向溢出，图例与工具栏不遮挡；最终截图实际审阅。 |
 | 桌面/移动阅读 | 八页在1440×900、390×844、320×740检查，无横向页面溢出、缺图或新增脚本错误；桌面与手机截图实际查看。 |
@@ -38,4 +38,4 @@
 - 浏览器实测为本机Chrome的桌面和窄视口；没有物理iOS/Android设备测试，也没有宣称完成屏幕阅读器全量审计或真实网络Core Web Vitals测量。
 - 查看器有可选Google Fonts请求，失败时可回退；阅读站点正文使用系统字体。未逐一测试剪贴板导出、语义雷达、透镜、演示模式等所有高级工具。默认静态输出，WebM已禁用，不属于交付。
 - 没有可调用codebase-memory-mcp和Context7 MCP；按本地源码、技能说明、CLI帮助和官方文件继续完成任务。
-- 尚未发布公网网站、创建GitHub远程或推送。缺少本会话公开发布的明确授权；没有覆盖同名仓库。Pages工作流只表示发布准备完成，不表示已经部署成功。
+- 已于2026-10-21追加授权后发布：公开仓库https://github.com/LJH-snow/deepinfer-atlas；站点https://ljh-snow.github.io/deepinfer-atlas/。首个Pages工作流成功，在线页面/交互图/图片和证据资源已通过HTTP检查；首次线上核对记录见`data/publication.json`。没有覆盖已有同名仓库。

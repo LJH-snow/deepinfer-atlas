@@ -2,24 +2,24 @@
 
 **An unofficial visual guide to DeepInfer.**
 
-[简体中文](README.md) · [Reading site](site/index.html) · [Source reading map](site/source-map.html) · [Evidence](docs/evidence.md)
+[简体中文](README.md) · [Reading site](https://ljh-snow.github.io/deepinfer-atlas/index.html) · [Source reading map](https://ljh-snow.github.io/deepinfer-atlas/source-map.html) · [Evidence](docs/evidence.md)
 
 Build a source-level mental model of DeepInfer in about ten minutes. Follow the path from `LLM.generate()` through batching, model execution, sampling, and device cache management. Then explore CPU/device overlap, DSpark verification scheduling, and the boundary between the released engine and a complete production service.
 
 ![Preview of the deepinfer-atlas reading site](site/assets/overview.png)
 
-This is an independent community project with no affiliation with or endorsement by DeepSeek. **The current delivery is a locally reviewable, publish-ready project. There is no public website yet.** The site links above point to the prebuilt HTML in this repository; download the repository to open it, or start the local server below. The reading site is written in Chinese, retaining original technical identifiers. This English README explains its purpose, scope, and use independently.
+This is an independent community project with no affiliation with or endorsement by DeepSeek. **[Read online](https://ljh-snow.github.io/deepinfer-atlas/) · [GitHub repository](https://github.com/LJH-snow/deepinfer-atlas)**. The reading site is live on GitHub Pages. You can also download the repository and open `site/index.html`, or start the local server below. The site is written in Chinese, retaining original technical identifiers. This English README explains its purpose, scope, and use independently.
 
 ## What you can learn
 
 | Question | Entry point |
 | --- | --- |
-| What does DeepInfer coordinate, and how do its modules work together? | [Architecture](site/architecture.html) / [Interactive diagram](site/diagrams/architecture.html) |
-| How does an offline request move through the generation loop? | [Request lifecycle](site/request.html) / [Interactive diagram](site/diagrams/request.html) |
-| What is released, supported for integration, or absent from this release? | [Release boundary](site/scope.html) / [Interactive diagram](site/diagrams/scope.html) |
-| Where do asynchronous scheduling and DSpark save work? | [Performance mechanisms](site/performance.html) |
-| Which source files should I read next? | [Three reading routes](site/source-map.html) |
-| What supports the diagrams and claims? | [Evidence page](site/evidence.html) / [Machine-readable evidence](data/evidence.json) |
+| What does DeepInfer coordinate, and how do its modules work together? | [Architecture](https://ljh-snow.github.io/deepinfer-atlas/architecture.html) / [Interactive diagram](https://ljh-snow.github.io/deepinfer-atlas/diagrams/architecture.html) |
+| How does an offline request move through the generation loop? | [Request lifecycle](https://ljh-snow.github.io/deepinfer-atlas/request.html) / [Interactive diagram](https://ljh-snow.github.io/deepinfer-atlas/diagrams/request.html) |
+| What is released, supported for integration, or absent from this release? | [Release boundary](https://ljh-snow.github.io/deepinfer-atlas/scope.html) / [Interactive diagram](https://ljh-snow.github.io/deepinfer-atlas/diagrams/scope.html) |
+| Where do asynchronous scheduling and DSpark save work? | [Performance mechanisms](https://ljh-snow.github.io/deepinfer-atlas/performance.html) |
+| Which source files should I read next? | [Three reading routes](https://ljh-snow.github.io/deepinfer-atlas/source-map.html) |
+| What supports the diagrams and claims? | [Evidence page](https://ljh-snow.github.io/deepinfer-atlas/evidence.html) / [Machine-readable evidence](data/evidence.json) |
 
 A suggested first pass takes approximately 2 minutes on architecture, 3 on the request lifecycle, 2 on release scope, and 3 on performance mechanisms. The source map supports a deeper reading session afterward.
 
@@ -77,9 +77,9 @@ The script runs `validate → deliver → visual-check` in order and stops on fa
 
 ## Deployment status
 
-`site/` and `dist/` are ready for a static host. The included [GitHub Pages workflow](.github/workflows/pages.yml), based on GitHub's official static-site template, deploys `site/`. After creating the remote repository, select GitHub Actions under Settings → Pages, then push or run the workflow manually.
+`site/` and `dist/` are ready for a static host. GitHub Pages is enabled for this repository. The included [deployment workflow](.github/workflows/pages.yml), based on GitHub's official static-site template, publishes `site/` on pushes to `main` and can also be run manually.
 
-**No remote repository was created, no push was made, and no public site was published in this session.** Public publishing had not been explicitly authorized. Existing repositories were not overwritten. Once an authorized deployment succeeds, add the actual live URL to both READMEs.
+**Published on October 21, 2026**, with the owner’s authorization: [LJH-snow/deepinfer-atlas](https://github.com/LJH-snow/deepinfer-atlas) and [https://ljh-snow.github.io/deepinfer-atlas/](https://ljh-snow.github.io/deepinfer-atlas/). The Pages deployment and production resources were checked. No existing repository was overwritten. Publishing this guide does not change the pinned upstream analysis baseline.
 
 A repository description, bilingual taglines, launch copy, preview image, and three follow-up article topics are prepared in [release materials](docs/release.md).
 

@@ -75,7 +75,7 @@ request 的类型是 `sequence`；scope 是 `architecture`。任何非零退出�
 
 `site/` 或 `dist/` 可上传到任意静态托管平台。所有路径相对引用，已准备 GitHub Pages 子路径部署。`.github/workflows/pages.yml` 参考 2026-10-20 获取的官方 `actions/starter-workflows` 静态模板，目标是 `site/`。
 
-创建/发布公开仓库需要所有者的明确授权与可用身份；本项目交付阶段没有执行远程写操作。授权后应先核对同名仓库，确认不会覆盖他人工作，再创建/关联远程、推送、在 Pages 中选择 GitHub Actions，确认实际部署 URL 后更新双语 README。工作流为准备内容，并非已发布的证明。
+本项目已于2026-10-21按所有者追加授权发布到https://github.com/LJH-snow/deepinfer-atlas，在线地址为https://ljh-snow.github.io/deepinfer-atlas/，Pages采用GitHub Actions。后续更新提交后推送main即可触发部署；必须检查实际工作流和线上资源，不能仅凭工作流文件宣称发布成功。Fork到其他账号时，更新双语README地址并在Settings → Pages选择GitHub Actions。
 
 ## 可重复的浏览器检查
 

@@ -30,7 +30,7 @@
 <pre><code>python3 scripts/build.py
 python3 -m http.server 4173 --bind 127.0.0.1 --directory site</code></pre>
 <p>随后访问 <code>http://127.0.0.1:4173/</code>。构建只用 Python 标准库，会生成 <code>site/</code> 并复制部署产物到 <code>dist/</code>；无需安装前端依赖或启动后台 API。没有 GPU / NPU 也能阅读、构建和验证本项目。</p>
-<p>所有站点资源采用相对路径，可部署到域名根目录或项目子路径。仓库提供 GitHub Pages 工作流；只有在你创建远程仓库并在 Pages 中启用 GitHub Actions 后，推送才会触发相应发布。</p>
+<p>所有站点资源采用相对路径，可部署到域名根目录或项目子路径。当前站点已通过 GitHub Pages 发布；<a href="https://github.com/LJH-snow/deepinfer-atlas">图谱仓库</a>提供部署工作流，推送 main 后自动更新。Fork 后请在自己的 Pages 设置中启用 GitHub Actions。</p>
 <h2 id="regenerate">怎样更新上游与重新生成</h2>
 <ol>
   <li>从 <code>data/upstream.json</code> 读取固定 SHA。执行 <code>python3 scripts/fetch_upstream.py</code> 获取精确 checkout；脚本不会自动跳到新 HEAD。</li>

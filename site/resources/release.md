@@ -28,7 +28,9 @@ An unofficial visual guide to DeepInfer, from `LLM.generate()` to device executi
 
 站点轻量、无后台，提供双语 README、可重新生成的图规格和验证记录。没有运行模型或复测官方性能数据。项目独立整理，与 DeepSeek 无隶属关系。
 
-发布时在此文案后加入已经核验的真实仓库与在线站点地址。
+仓库：https://github.com/LJH-snow/deepinfer-atlas
+
+在线阅读：https://ljh-snow.github.io/deepinfer-atlas/
 
 ## Short English launch copy
 
@@ -44,4 +46,4 @@ The guide is pinned to commit `774ce244b87cc0eb8d4b94ab9f5de2ab22049f01`, checke
 
 ## 发布状态
 
-当前为本地可审阅、可部署版本。没有创建公开远程仓库、没有推送、没有部署公网 Pages。缺少本会话对公开发布的明确授权；凭据是否可用未作为完成本地工作的前提，也没有借此提前停止。授权后仍需检查同名仓库和真实 Pages 结果。
+已于2026-10-21按所有者授权创建公开仓库并推送main，GitHub Pages工作流成功，线上页面与资源已核对。仓库：https://github.com/LJH-snow/deepinfer-atlas；站点：https://ljh-snow.github.io/deepinfer-atlas/。创建前确认不存在同名仓库，没有覆盖已有工作。

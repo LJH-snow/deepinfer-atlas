@@ -1,0 +1,130 @@
+{
+  "checked_on": "2026-10-21",
+  "repository": "https://github.com/LJH-snow/deepinfer-atlas",
+  "site_url": "https://ljh-snow.github.io/deepinfer-atlas/",
+  "verified_deployment_commit": "73b691f0279698ff8b02b1ab8e26fd0a6adf8300",
+  "initial_pages_run": "https://github.com/LJH-snow/deepinfer-atlas/actions/runs/39461787636",
+  "method": "system curl, reused TLS connection, certificate validation enabled",
+  "ok": true,
+  "records": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 6267,
+      "sha256": "3e1847e062152f5c58edeca3e0bc925f9968ff369271e7826347c4b46a7b20d9",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "architecture.html",
+      "status": 200,
+      "bytes": 17009,
+      "sha256": "f35e3178b41d5f4ed1ace80690e094f5313758b974b0758b7e0b221a382e1775",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "request.html",
+      "status": 200,
+      "bytes": 17215,
+      "sha256": "51b94b98777f931aa3d6596ddf94488edc593726d6cc5f6de593c3fad6af216c",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "scope.html",
+      "status": 200,
+      "bytes": 15709,
+      "sha256": "f7c2426b6cd06b458079482fd3b3027ea7a58dcf3b0885d0efd1d53af8e8cc4a",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "performance.html",
+      "status": 200,
+      "bytes": 22637,
+      "sha256": "6e1680f58378d2e5768929cfeefea94e359ad81fa47385da9de6b7eb287b820b",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "source-map.html",
+      "status": 200,
+      "bytes": 23214,
+      "sha256": "b663b36351fa8094e6276c46efc9345171d46fc749c368d6d637ba0fd71f1895",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "evidence.html",
+      "status": 200,
+      "bytes": 39439,
+      "sha256": "795bba03825288924a249735f68cab72ceabbd2bd1b16af8b867721e070a5d12",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "about.html",
+      "status": 200,
+      "bytes": 6869,
+      "sha256": "3d15ee981964616510332fb3a03661e186569ed068b2a747e104a5d2ae10e527",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "diagrams/architecture.html",
+      "status": 200,
+      "bytes": 711671,
+      "sha256": "d18e61258c6770bd3a5b2d79d32c5ce406b01ed214a87c4c102173a942606391",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "diagrams/request.html",
+      "status": 200,
+      "bytes": 709178,
+      "sha256": "8b2504f026f30581c602d6d24cc55d2f4f9b7c0620555b61626c03951889308c",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "diagrams/scope.html",
+      "status": 200,
+      "bytes": 709404,
+      "sha256": "35a4948c05e931199b8dad3d2c36ce5ff0005dc3a836129a940bb0f27d64146e",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "assets/overview.png",
+      "status": 200,
+      "bytes": 140019,
+      "sha256": "ab7050cac95c9415fe0162577278d6eacdd0ab0260afb6bc92582cd785c43a03",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "assets/architecture.png",
+      "status": 200,
+      "bytes": 391254,
+      "sha256": "d7e69eae93afafdadcdb094fd5cc2cf8131c48cc49bd0cee98e6802cb1cc8090",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "assets/request.png",
+      "status": 200,
+      "bytes": 405627,
+      "sha256": "d4ec4c76c102402807d6c9d1566bec76b7a7cba7cd01df70dbc9f5d5319e5af4",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "assets/scope.png",
+      "status": 200,
+      "bytes": 401194,
+      "sha256": "8edba1e262f285c681c3f077b724f239955aecd85bc88cdffb739c10ebd29dc1",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "assets/style.css",
+      "status": 200,
+      "bytes": 16324,
+      "sha256": "30d9ea0f3b2ee07fe4de125c4fbc5d6dfd4fee90659a58bbb2c87eb21062fe7b",
+      "matches_deployed_commit": true
+    },
+    {
+      "path": "data/evidence.json",
+      "status": 200,
+      "bytes": 33736,
+      "sha256": "4da8f1d8141713b21a70fd83a724ff3d28be99a50b84879a6fe96c8cd27ac9ec",
+      "matches_deployed_commit": true
+    }
+  ]
+}

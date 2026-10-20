@@ -40,3 +40,6 @@
 ## GitHub发布（2026-10-21）
 - 用户明确要求完成后推送GitHub；核对登录账号LJH-snow与同名仓库不存在。
 - 在已完成本地首版基础上继续发布；不修改上游分析基线，不覆盖已有远程工作。
+- 首次Pages workflow成功；Python urllib线上探测在本机TLS握手阶段出现UNEXPECTED_EOF，并非站点HTTP失败。改用系统curl/Chrome核对，不关闭证书验证。
+- 首次Pages部署成功（run 39461787636）；17项线上页面/图形/图片/样式/证据资源全部HTTP200，并与已部署commit 73b691f字节一致。系统curl复用TLS连接完成核对，证书校验保持开启。
+- 中英文README阅读入口已替换为真实Pages地址，发布状态、维护和验证文档已同步。

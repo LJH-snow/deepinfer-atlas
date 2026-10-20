@@ -30,4 +30,6 @@
 - 图形JSON、收据、人工视觉审阅和上游固定版本均记录，可维护再生成。
 
 ## 追加阶段：GitHub发布（2026-10-21）
-7. [进行中] 创建公开仓库、推送、启用GitHub Pages、验证线上并更新双语入口。
+7. [完成] 创建公开仓库、推送、启用GitHub Pages、验证线上并更新双语入口。
+
+- 发布结果：公开仓库 https://github.com/LJH-snow/deepinfer-atlas ，在线站点 https://ljh-snow.github.io/deepinfer-atlas/ ，Pages首次部署成功且17项在线资源通过核对。
