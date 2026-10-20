@@ -1,0 +1,13 @@
+<h2 id="baseline">本次分析的上游基线</h2>
+<p><strong>仓库：</strong><a href="https://github.com/deepseek-ai/DeepInfer/tree/{{commit}}">deepseek-ai/DeepInfer</a><br><strong>Commit：</strong><code>{{commit}}</code><br><strong>核对日期：</strong><time datetime="2026-10-20">2026-10-20</time>（Asia/Shanghai）<br><strong>范围：</strong>离线示例、Python 入口、引擎、C++ 调度和块管理、Worker / ModelRunner、模型与采样、设备缓存、异步和 DSpark 主路径，以及官方 README / 部署 Q&A。</p>
+<p>本次核对没有执行模型推理、GPU / NPU 基准或生产服务部署。当前机器可执行的是源码静态核对、静态站点验证和浏览器图形检查。上游后续 commit 的行为需另行核验。</p>
+<p><a href="data/upstream.json" download>下载基线 JSON</a> · <a href="data/evidence.json" download>下载完整证据 JSON</a> · <a href="data/diagram-map.json" download>下载图节点与连线映射</a></p>
+<h2 id="types">证据分级</h2>
+<dl class="glossary"><div><dt>源码确认</dt><dd>按固定 checkout 的函数、类和调用点静态核对。意味着代码里存在该路径，不意味着已在所有配置上运行验证。</dd></div><div><dt>官方文档描述</dt><dd>来自同一 commit 的上游 README 或部署 Q&A。用于支持表、生产系统背景与未开源范围；不把它写成本项目实测。</dd></div><div><dt>解释性简化</dt><dd>为阅读组织的模块分组、循环图、示例预算和阅读路线。旁文标明折叠的并行与边界，不把它们当成精确 trace 或源码中的类名。</dd></div></dl>
+<h2 id="diagram-evidence">图里的关系如何回到代码</h2>
+<div class="table-wrap"><table><caption>三个核心图的主要映射；全部节点/连线见可下载 JSON</caption><thead><tr><th scope="col">图中关系</th><th scope="col">证据</th><th scope="col">解释范围</th></tr></thead><tbody><tr><td>示例 → LLM → Engine</td><td><a href="#E01">E01</a>、<a href="#E02">E02</a>、<a href="#E03">E03</a>、<a href="#E04">E04</a></td><td>入队与 step 循环合并在架构连线。</td></tr><tr><td>Engine → Scheduler → 块管理</td><td><a href="#E06">E06</a>、<a href="#E08">E08</a>、<a href="#E09">E09</a>、<a href="#E11">E11</a></td><td>资源操作与执行调用分开。</td></tr><tr><td>Engine → Worker → 模型 / 采样</td><td><a href="#E07">E07</a>、<a href="#E13">E13</a>、<a href="#E15">E15</a>、<a href="#E16">E16</a>、<a href="#E18">E18</a></td><td>Model Executor 为目录级分组。</td></tr><tr><td>采样 → 后处理 → 输出</td><td><a href="#E14">E14</a>、<a href="#E19">E19</a>、<a href="#E20">E20</a>、<a href="#E21">E21</a></td><td>时序图是阶段关系，ZOS 的跨步重叠另述。</td></tr><tr><td>模型 → 设备缓存 / 算子</td><td><a href="#E12">E12</a>、<a href="#E15">E15</a>、<a href="#E30">E30</a>、<a href="#E31">E31</a>、<a href="#E32">E32</a></td><td>缓存张量使用与实现依赖，不是同步服务调用。</td></tr><tr><td>已发布 / 需集成 / 未包含</td><td><a href="#D01">D01</a>、<a href="#D02">D02</a>、<a href="#D03">D03</a>、<a href="#E23">E23</a>、<a href="#E34">E34</a>、<a href="#E39">E39</a>、<a href="#E40">E40</a></td><td>归类图没有调用连线；版本绑定在本页基线。</td></tr></tbody></table></div>
+<h2 id="uncertainty">尚未声称验证的内容</h2>
+<p>未公开的生产缓存布局、远程服务协议、负载均衡策略细节、线上 SLA、所有 rank / 硬件组合的行为，以及任何端到端加速比，都不由这次静态核对证明。没有在代码或官方文档中得到充分依据的部分，不用猜测补全。若发现不一致，应携带此页 commit、证据 ID 和具体符号提出修正。</p>
+<h2 id="all-evidence">逐条证据清单</h2>
+<p>共 {{evidence_count}} 条记录。链接固定到同一 commit；片段摘要用于维护时检测行号或内容漂移，不能代替对语义的人工复核。</p>
+{{evidence_rows}}

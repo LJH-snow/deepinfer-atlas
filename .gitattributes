@@ -1,0 +1,8 @@
+# Generated artifacts keep the renderer/exporter's exact bytes and recorded digests.
+site/diagrams/*.html linguist-generated=true
+site/assets/architecture.svg linguist-generated=true -whitespace
+site/assets/request.svg linguist-generated=true -whitespace
+site/assets/scope.svg linguist-generated=true -whitespace
+site/*.html linguist-generated=true
+site/data/*.json linguist-generated=true
+site/resources/* linguist-generated=true

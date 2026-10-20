@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9fc">
+  <meta name="description" content="本地阅读、图形操作、导出、重新生成与上游归属说明。">
+  <title>使用与归属 · deepinfer-atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳转到正文</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" aria-label="deepinfer-atlas 首页"><span class="mark" aria-hidden="true">da</span><span translate="no">deepinfer<span class="wordmark-tail">/atlas</span></span></a>
+      <nav class="primary-nav" aria-label="主导航"><a href="architecture.html">架构总览</a><a href="request.html">请求时序</a><a href="scope.html">开源边界</a><a href="performance.html">性能优化</a><a href="source-map.html">源码地图</a><a href="evidence.html">版本与证据</a></nav>
+      <a class="upstream-link" href="https://github.com/deepseek-ai/DeepInfer/tree/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01">上游源码 ↗</a>
+    </div>
+  </header>
+  <main id="main" tabindex="-1"><div class="article-shell"><aside class="toc"><details open><summary>本页内容</summary><nav aria-label="页内导航"><a href="#reading">怎样使用这份图谱</a><a href="#export">图形导出</a><a href="#local">本地预览与构建</a><a href="#regenerate">怎样更新上游与重新生成</a><a href="#attribution">独立导读与来源归属</a></nav></details><p class="reading-note">所有源码链接固定到<br><code>774ce244b87c</code><br>原始函数名保留英文。</p></aside><article class="article"><header class="article-header"><p class="chapter">07 / DEEPINFER ATLAS</p><h1>使用与归属</h1><p class="lead">本地阅读、图形操作、导出、重新生成与上游归属说明。</p></header><h2 id="reading">怎样使用这份图谱</h2>
+<p>建议先按首页的 10 分钟路线阅读，再沿源码地图深入。正文和静态预览可直接打开；三个 Archify 图是自包含 HTML，点击“打开交互图”后可缩放、搜索、选择节点和追踪关系。页面采用独立打开方式，避免移动端在嵌入窗口中反复滚动；返回正文可使用浏览器返回。</p>
+<p>图中标签比较密集时，使用放大按钮或浏览器缩放。键盘可聚焦工具栏；节点也可通过图形查看器提供的搜索入口定位。浅色 / 深色只改变图形配色，节点、关系与证据含义保持一致。查看器包含可选的 Google Fonts 请求，网络不可用时使用系统字体；站点正文不加载外部字体。</p>
+<p>在窄屏上，交互图保留局部可读比例。可横向滚动画布查看其他区域，或点击放大镜搜索节点；正文预览帮助你先看清整体结构。</p>
+<h2 id="export">图形导出</h2>
+<p>图形右上角的“导出”提供 SVG、PNG、JPEG 和 WebP 等静态格式，具体以查看器菜单为准。默认交付为静态图，没有录制演示视频。导出只负责图形，不包含本文的证据表和解释边界；引用时请附上本次分析 commit 与页面上下文。</p>
+<p>站点中的 PNG 预览来自同一份已验收的 Archify 图。维护者可用保存的 JSON 规格重新生成；不要把截图作为唯一可编辑源。<a href="resources/verification.md">查看实际验证记录</a>，其中区分已测试的功能与查看器提供但本项目未逐项验证的功能。</p>
+<h2 id="local">本地预览与构建</h2>
+<p>打开仓库中的 <code>site/index.html</code> 即可阅读。推荐用本地 HTTP 服务检查图形导出和部署路径：</p>
+<pre><code>python3 scripts/build.py
+python3 -m http.server 4173 --bind 127.0.0.1 --directory site</code></pre>
+<p>随后访问 <code>http://127.0.0.1:4173/</code>。构建只用 Python 标准库，会生成 <code>site/</code> 并复制部署产物到 <code>dist/</code>；无需安装前端依赖或启动后台 API。没有 GPU / NPU 也能阅读、构建和验证本项目。</p>
+<p>所有站点资源采用相对路径，可部署到域名根目录或项目子路径。仓库提供 GitHub Pages 工作流；只有在你创建远程仓库并在 Pages 中启用 GitHub Actions 后，推送才会触发相应发布。</p>
+<h2 id="regenerate">怎样更新上游与重新生成</h2>
+<ol>
+  <li>从 <code>data/upstream.json</code> 读取固定 SHA。执行 <code>python3 scripts/fetch_upstream.py</code> 获取精确 checkout；脚本不会自动跳到新 HEAD。</li>
+  <li>准备分析新版本时，先独立 checkout 新 SHA，重新检查主要路径、发布范围、配置条件和所有证据。不要只替换 URL 中的 commit。</li>
+  <li>修改 <code>content/</code> 的文章与 <code>data/evidence.json</code> 的符号/片段范围；核心拓扑变化则更新 <code>diagrams/specs/</code>。</li>
+  <li>有 Archify 2.16 的环境可按维护文档运行 <code>python3 scripts/diagrams.py</code>，依次完成 validate、deliver、visual-check。每张图必须有 9/9 showcase、0 errors / warnings。</li>
+  <li>实际查看浅色、深色和移动端；重新导出预览，再构建并运行站点/源码检查。</li>
+</ol>
+<p><a href="resources/maintenance.md">完整维护说明</a> · <a href="data/diagram-map.json">节点和连线的证据映射</a> · <a href="resources/baseline.md">分析范围</a></p>
+<h2 id="attribution">独立导读与来源归属</h2>
+<p><strong>deepinfer-atlas 是非官方、独立整理的可视化源码导读，与 DeepSeek 无隶属关系。</strong>DeepInfer、DeepSeek 及相关名称归各自权利人。上游 DeepInfer 代码采用 Apache-2.0；本项目通过固定版本链接归属其源码与官方文档，没有把上游完整代码作为本项目发布内容。</p>
+<p>本项目原创文档、站点与图规格采用 MIT License。交互图由 Archify 2.16 生成，其运行时采用 MIT，保留 tt-a1i 与 Cocoon AI 的版权说明。没有修改 DeepInfer 内核，也没有声称得到了官方认可。</p>
+<p><a href="resources/LICENSE">本项目许可证</a> · <a href="resources/THIRD_PARTY_NOTICES.md">第三方归属与许可证</a> · <a href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/LICENSE">上游许可证</a></p>
+</article></div></main>
+  <footer class="site-footer">
+    <div><strong translate="no">deepinfer-atlas</strong><span>DeepInfer 非官方可视化源码导读</span></div>
+    <p>分析 <a href="evidence.html#baseline"><code>774ce244b87c</code></a> · 核对于 <time datetime="2026-10-20">2026-10-20</time> · <a href="about.html">使用与归属</a></p>
+  </footer>
+</body>
+</html>

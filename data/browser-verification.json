@@ -1,0 +1,305 @@
+{
+  "ok": true,
+  "records": [
+    {
+      "page": "index",
+      "width": 1440,
+      "height": 900,
+      "title": "首页 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "读懂推理引擎，从一张图开始。"
+    },
+    {
+      "page": "architecture",
+      "width": 1440,
+      "height": 900,
+      "title": "架构总览 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "架构总览"
+    },
+    {
+      "page": "request",
+      "width": 1440,
+      "height": 900,
+      "title": "请求时序 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "请求时序"
+    },
+    {
+      "page": "scope",
+      "width": 1440,
+      "height": 900,
+      "title": "开源边界 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "开源边界"
+    },
+    {
+      "page": "performance",
+      "width": 1440,
+      "height": 900,
+      "title": "性能优化 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "性能优化"
+    },
+    {
+      "page": "source-map",
+      "width": 1440,
+      "height": 900,
+      "title": "源码地图 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "源码地图"
+    },
+    {
+      "page": "evidence",
+      "width": 1440,
+      "height": 900,
+      "title": "版本与证据 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "版本与证据"
+    },
+    {
+      "page": "about",
+      "width": 1440,
+      "height": 900,
+      "title": "使用与归属 · deepinfer-atlas",
+      "scrollWidth": 1440,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "使用与归属"
+    },
+    {
+      "page": "index",
+      "width": 390,
+      "height": 844,
+      "title": "首页 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "读懂推理引擎，从一张图开始。"
+    },
+    {
+      "page": "architecture",
+      "width": 390,
+      "height": 844,
+      "title": "架构总览 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "架构总览"
+    },
+    {
+      "page": "request",
+      "width": 390,
+      "height": 844,
+      "title": "请求时序 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "请求时序"
+    },
+    {
+      "page": "scope",
+      "width": 390,
+      "height": 844,
+      "title": "开源边界 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "开源边界"
+    },
+    {
+      "page": "performance",
+      "width": 390,
+      "height": 844,
+      "title": "性能优化 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "性能优化"
+    },
+    {
+      "page": "source-map",
+      "width": 390,
+      "height": 844,
+      "title": "源码地图 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "源码地图"
+    },
+    {
+      "page": "evidence",
+      "width": 390,
+      "height": 844,
+      "title": "版本与证据 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "版本与证据"
+    },
+    {
+      "page": "about",
+      "width": 390,
+      "height": 844,
+      "title": "使用与归属 · deepinfer-atlas",
+      "scrollWidth": 390,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "使用与归属"
+    },
+    {
+      "page": "index",
+      "width": 320,
+      "height": 740,
+      "title": "首页 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "读懂推理引擎，从一张图开始。"
+    },
+    {
+      "page": "architecture",
+      "width": 320,
+      "height": 740,
+      "title": "架构总览 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "架构总览"
+    },
+    {
+      "page": "request",
+      "width": 320,
+      "height": 740,
+      "title": "请求时序 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "请求时序"
+    },
+    {
+      "page": "scope",
+      "width": 320,
+      "height": 740,
+      "title": "开源边界 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "开源边界"
+    },
+    {
+      "page": "performance",
+      "width": 320,
+      "height": 740,
+      "title": "性能优化 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "性能优化"
+    },
+    {
+      "page": "source-map",
+      "width": 320,
+      "height": 740,
+      "title": "源码地图 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "源码地图"
+    },
+    {
+      "page": "evidence",
+      "width": 320,
+      "height": 740,
+      "title": "版本与证据 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "版本与证据"
+    },
+    {
+      "page": "about",
+      "width": 320,
+      "height": 740,
+      "title": "使用与归属 · deepinfer-atlas",
+      "scrollWidth": 320,
+      "missingImages": [],
+      "navigationLinks": 6,
+      "heading": "使用与归属"
+    },
+    {
+      "diagram": "architecture",
+      "themeToggle": true,
+      "zoomChanged": true
+    },
+    {
+      "diagram": "architecture",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 967
+    },
+    {
+      "diagram": "architecture",
+      "width": 320,
+      "height": 740,
+      "scrollWidth": 320,
+      "scrollHeight": 1026
+    },
+    {
+      "diagram": "request",
+      "themeToggle": true,
+      "zoomChanged": true
+    },
+    {
+      "diagram": "request",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 952
+    },
+    {
+      "diagram": "request",
+      "width": 320,
+      "height": 740,
+      "scrollWidth": 320,
+      "scrollHeight": 986
+    },
+    {
+      "diagram": "scope",
+      "themeToggle": true,
+      "zoomChanged": true
+    },
+    {
+      "diagram": "scope",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 986
+    },
+    {
+      "diagram": "scope",
+      "width": 320,
+      "height": 740,
+      "scrollWidth": 320,
+      "scrollHeight": 1037
+    }
+  ],
+  "failures": [],
+  "runtimeErrors": [],
+  "networkErrors": []
+}

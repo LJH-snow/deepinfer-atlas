@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9fc">
+  <meta name="description" content="逐条源码或官方文档证据，包含固定 commit 链接、符号、行号及校验摘要。">
+  <title>版本与证据 · deepinfer-atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳转到正文</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" aria-label="deepinfer-atlas 首页"><span class="mark" aria-hidden="true">da</span><span translate="no">deepinfer<span class="wordmark-tail">/atlas</span></span></a>
+      <nav class="primary-nav" aria-label="主导航"><a href="architecture.html">架构总览</a><a href="request.html">请求时序</a><a href="scope.html">开源边界</a><a href="performance.html">性能优化</a><a href="source-map.html">源码地图</a><a href="evidence.html" aria-current="page">版本与证据</a></nav>
+      <a class="upstream-link" href="https://github.com/deepseek-ai/DeepInfer/tree/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01">上游源码 ↗</a>
+    </div>
+  </header>
+  <main id="main" tabindex="-1"><div class="article-shell"><aside class="toc"><details open><summary>本页内容</summary><nav aria-label="页内导航"><a href="#baseline">本次分析的上游基线</a><a href="#types">证据分级</a><a href="#diagram-evidence">图里的关系如何回到代码</a><a href="#uncertainty">尚未声称验证的内容</a><a href="#all-evidence">逐条证据清单</a></nav></details><p class="reading-note">所有源码链接固定到<br><code>774ce244b87c</code><br>原始函数名保留英文。</p></aside><article class="article"><header class="article-header"><p class="chapter">06 / DEEPINFER ATLAS</p><h1>版本与证据</h1><p class="lead">逐条源码或官方文档证据，包含固定 commit 链接、符号、行号及校验摘要。</p></header><h2 id="baseline">本次分析的上游基线</h2>
+<p><strong>仓库：</strong><a href="https://github.com/deepseek-ai/DeepInfer/tree/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01">deepseek-ai/DeepInfer</a><br><strong>Commit：</strong><code>774ce244b87cc0eb8d4b94ab9f5de2ab22049f01</code><br><strong>核对日期：</strong><time datetime="2026-10-20">2026-10-20</time>（Asia/Shanghai）<br><strong>范围：</strong>离线示例、Python 入口、引擎、C++ 调度和块管理、Worker / ModelRunner、模型与采样、设备缓存、异步和 DSpark 主路径，以及官方 README / 部署 Q&A。</p>
+<p>本次核对没有执行模型推理、GPU / NPU 基准或生产服务部署。当前机器可执行的是源码静态核对、静态站点验证和浏览器图形检查。上游后续 commit 的行为需另行核验。</p>
+<p><a href="data/upstream.json" download>下载基线 JSON</a> · <a href="data/evidence.json" download>下载完整证据 JSON</a> · <a href="data/diagram-map.json" download>下载图节点与连线映射</a></p>
+<h2 id="types">证据分级</h2>
+<dl class="glossary"><div><dt>源码确认</dt><dd>按固定 checkout 的函数、类和调用点静态核对。意味着代码里存在该路径，不意味着已在所有配置上运行验证。</dd></div><div><dt>官方文档描述</dt><dd>来自同一 commit 的上游 README 或部署 Q&A。用于支持表、生产系统背景与未开源范围；不把它写成本项目实测。</dd></div><div><dt>解释性简化</dt><dd>为阅读组织的模块分组、循环图、示例预算和阅读路线。旁文标明折叠的并行与边界，不把它们当成精确 trace 或源码中的类名。</dd></div></dl>
+<h2 id="diagram-evidence">图里的关系如何回到代码</h2>
+<div class="table-wrap"><table><caption>三个核心图的主要映射；全部节点/连线见可下载 JSON</caption><thead><tr><th scope="col">图中关系</th><th scope="col">证据</th><th scope="col">解释范围</th></tr></thead><tbody><tr><td>示例 → LLM → Engine</td><td><a href="#E01">E01</a>、<a href="#E02">E02</a>、<a href="#E03">E03</a>、<a href="#E04">E04</a></td><td>入队与 step 循环合并在架构连线。</td></tr><tr><td>Engine → Scheduler → 块管理</td><td><a href="#E06">E06</a>、<a href="#E08">E08</a>、<a href="#E09">E09</a>、<a href="#E11">E11</a></td><td>资源操作与执行调用分开。</td></tr><tr><td>Engine → Worker → 模型 / 采样</td><td><a href="#E07">E07</a>、<a href="#E13">E13</a>、<a href="#E15">E15</a>、<a href="#E16">E16</a>、<a href="#E18">E18</a></td><td>Model Executor 为目录级分组。</td></tr><tr><td>采样 → 后处理 → 输出</td><td><a href="#E14">E14</a>、<a href="#E19">E19</a>、<a href="#E20">E20</a>、<a href="#E21">E21</a></td><td>时序图是阶段关系，ZOS 的跨步重叠另述。</td></tr><tr><td>模型 → 设备缓存 / 算子</td><td><a href="#E12">E12</a>、<a href="#E15">E15</a>、<a href="#E30">E30</a>、<a href="#E31">E31</a>、<a href="#E32">E32</a></td><td>缓存张量使用与实现依赖，不是同步服务调用。</td></tr><tr><td>已发布 / 需集成 / 未包含</td><td><a href="#D01">D01</a>、<a href="#D02">D02</a>、<a href="#D03">D03</a>、<a href="#E23">E23</a>、<a href="#E34">E34</a>、<a href="#E39">E39</a>、<a href="#E40">E40</a></td><td>归类图没有调用连线；版本绑定在本页基线。</td></tr></tbody></table></div>
+<h2 id="uncertainty">尚未声称验证的内容</h2>
+<p>未公开的生产缓存布局、远程服务协议、负载均衡策略细节、线上 SLA、所有 rank / 硬件组合的行为，以及任何端到端加速比，都不由这次静态核对证明。没有在代码或官方文档中得到充分依据的部分，不用猜测补全。若发现不一致，应携带此页 commit、证据 ID 和具体符号提出修正。</p>
+<h2 id="all-evidence">逐条证据清单</h2>
+<p>共 46 条记录。链接固定到同一 commit；片段摘要用于维护时检测行号或内容漂移，不能代替对语义的人工复核。</p>
+<section class="evidence-row" id="E01">
+<h3><code>E01</code> · main → LLM.generate<span class="badge">源码确认</span></h3>
+<p>准备模型、输入与采样参数；调用 generate；示例把 token IDs 解码为文本。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/examples/offline_inference.py#L34-L113"><code translate="no">examples/offline_inference.py:34-113</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def main(</code></p><p class="checksum">片段 SHA-256：<code>b0633c95a5ac4e4d6cd0c7ca27a5f036bf3a33fff573611cf58b1ac6661893e0</code></p></details>
+</section>
+<section class="evidence-row" id="E02">
+<h3><code>E02</code> · LLM.generate<span class="badge">源码确认</span></h3>
+<p>逐项 _add_request，然后运行 _run_engine；不是 HTTP 入口。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/entrypoints/llm.py#L90-L142"><code translate="no">deepinfer/entrypoints/llm.py:90-142</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def generate(</code></p><p class="checksum">片段 SHA-256：<code>ea9291343845d4b0c4025bd97c6093086411e2ba41eb51e216ef7aca46c89206</code></p></details>
+</section>
+<section class="evidence-row" id="E03">
+<h3><code>E03</code> · LLM._add_request<span class="badge">源码确认</span></h3>
+<p>必要时分词，复制 SamplingParams，传给引擎 add_request。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/entrypoints/llm.py#L144-L166"><code translate="no">deepinfer/entrypoints/llm.py:144-166</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def _add_request(</code></p><p class="checksum">片段 SHA-256：<code>9f4d27ce9ec562e70817c17a178c544f1e49bd9617fce39dc399139ed280275d</code></p></details>
+</section>
+<section class="evidence-row" id="E04">
+<h3><code>E04</code> · LLM._run_engine<span class="badge">源码确认</span></h3>
+<p>循环 step；结束前 flush；clone 池对象并按请求序聚合，可选解码。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/entrypoints/llm.py#L168-L195"><code translate="no">deepinfer/entrypoints/llm.py:168-195</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def _run_engine(</code></p><p class="checksum">片段 SHA-256：<code>7b1272d27c9c51793fd1c38ea26015c3ef81d200e155e140a431bfe90f129610</code></p></details>
+</section>
+<section class="evidence-row" id="E05">
+<h3><code>E05</code> · LLMEngine.add_request / _enqueue<span class="badge">源码确认</span></h3>
+<p>把 Sequence 加入 C++ Scheduler；有结构化输出时需等待 matcher 构建。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L620-L633"><code translate="no">deepinfer/engine/llm_engine.py:620-633</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def _enqueue(</code></p><p class="checksum">片段 SHA-256：<code>566c0da36922f3dbfdc256c1a0378237fc199d9863fed5f8c18bc4327b492b25</code></p></details>
+</section>
+<section class="evidence-row" id="E06">
+<h3><code>E06</code> · LLMEngine.step<span class="badge">源码确认</span></h3>
+<p>schedule 选出元数据与批次，再下发模型执行。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L860-L960"><code translate="no">deepinfer/engine/llm_engine.py:860-960</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def step(self)</code></p><p class="checksum">片段 SHA-256：<code>817a0464e349dcc4192b8a8ddcd95f26684438d1794c57d678786b8676daf6aa</code></p></details>
+</section>
+<section class="evidence-row" id="E07">
+<h3><code>E07</code> · LLMEngine._execute_model_async_step / post_process<span class="badge">源码确认</span></h3>
+<p>通过 Worker.execute_model_step 执行；post_process 回调处理输出并反馈 MTP runtime。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L961-L1016"><code translate="no">deepinfer/engine/llm_engine.py:961-1016</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def _execute_model_async_step(</code></p><p class="checksum">片段 SHA-256：<code>e5afa5c87c3477321ab95de7e1b1d0602b2a60f506e380185714457d2e6e1bd9</code></p></details>
+</section>
+<section class="evidence-row" id="E08">
+<h3><code>E08</code> · Scheduler._schedule<span class="badge">源码确认</span></h3>
+<p>在等待/运行队列、prefill 与 decode 之间组织批次，受块和计算预算约束。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L275-L558"><code translate="no">csrc/engine/scheduler.hpp:275-558</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>std::unique_ptr&lt;SchedulerOutputs&gt; _schedule()</code></p><p class="checksum">片段 SHA-256：<code>5993f0740de902be171451fc04e1160f40f6e20f08dc555bf3e27180b12e356f</code></p></details>
+</section>
+<section class="evidence-row" id="E09">
+<h3><code>E09</code> · Scheduler._schedule_decode<span class="badge">源码确认</span></h3>
+<p>为 decode 追加槽、处理资源不足；MTPVarlen 分配 seqlens_q。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L559-L663"><code translate="no">csrc/engine/scheduler.hpp:559-663</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>std::unique_ptr&lt;SchedulerOutputs&gt; _schedule_decode(</code></p><p class="checksum">片段 SHA-256：<code>fcffd2cff540aed2c6796acef2c3b6267d051358cf7c6fd29558213699fe2801</code></p></details>
+</section>
+<section class="evidence-row" id="E10">
+<h3><code>E10</code> · Scheduler.schedule<span class="badge">源码确认</span></h3>
+<p>构造每条 SequenceMetadata，记录在途长度和本轮 token 预算。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L667-L736"><code translate="no">csrc/engine/scheduler.hpp:667-736</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>py::tuple schedule(</code></p><p class="checksum">片段 SHA-256：<code>9b9d84b8ede5611ee7493f2637903435d4debf50387a1d3bc9d1b8cf4b60ab2a</code></p></details>
+</section>
+<section class="evidence-row" id="E11">
+<h3><code>E11</code> · BlockManager<span class="badge">源码确认</span></h3>
+<p>管理引擎缓存块编号的分配、固定与回收；不是分布式缓存服务。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/block_manager.hpp#L119-L187"><code translate="no">csrc/engine/block_manager.hpp:119-187</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>struct BlockManager :</code></p><p class="checksum">片段 SHA-256：<code>5b5fd0ecefdd50d6422f355f5cd70b307dbfa0f62d0372f9767c26d947cbc312</code></p></details>
+</section>
+<section class="evidence-row" id="E12">
+<h3><code>E12</code> · CacheEngine.do_allocate_kv_cache<span class="badge">源码确认</span></h3>
+<p>分配设备 KV blocks、state blocks，形成 GPUCacheInterface；不能据此推断长期缓存服务已提供。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/cache_engine.py#L851-L973"><code translate="no">deepinfer/worker/cache_engine.py:851-973</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>class CacheEngine:</code></p><p class="checksum">片段 SHA-256：<code>23e244f82fc4a5a9cd0fa45a66e769e6e3c50c7c7d7cc7555cfd4a67074ef906</code></p></details>
+</section>
+<section class="evidence-row" id="E13">
+<h3><code>E13</code> · Worker.execute_model_step<span class="badge">源码确认</span></h3>
+<p>先 launch 当前 forward，后处理上一轮，再采样当前轮；ZOS decode 延后当前后处理。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/worker.py#L89-L189"><code translate="no">deepinfer/worker/worker.py:89-189</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def execute_model_step(</code></p><p class="checksum">片段 SHA-256：<code>cf90c30dfedbca4799c1ba4ee3fd8e2e85840fa34f5a3ded8aefcda5df97c8fd</code></p></details>
+</section>
+<section class="evidence-row" id="E14">
+<h3><code>E14</code> · Worker._post_process_step / flush_inflight_reqs<span class="badge">源码确认</span></h3>
+<p>等待 sample_end_evt，再运行 ModelRunner 后处理和 Engine 回调；flush 排空在途结果。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/worker.py#L248-L283"><code translate="no">deepinfer/worker/worker.py:248-283</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def _post_process_step(</code></p><p class="checksum">片段 SHA-256：<code>30fc6349298cec43ed80bb9582acf8cd7373b795e008b67cec3610f2c136c2ba</code></p></details>
+</section>
+<section class="evidence-row" id="E15">
+<h3><code>E15</code> · ModelRunner.execute_main_model<span class="badge">源码确认</span></h3>
+<p>准备输入；CUDA graph replay 或 self.model forward；此方法禁止设备同步。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/model_runner.py#L308-L336"><code translate="no">deepinfer/worker/model_runner.py:308-336</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def execute_main_model(</code></p><p class="checksum">片段 SHA-256：<code>44445fa1661ea15dc39863a65824087a0d789d1999319d9f76a9973124de91be</code></p></details>
+</section>
+<section class="evidence-row" id="E16">
+<h3><code>E16</code> · ModelRunner.execute_sample<span class="badge">源码确认</span></h3>
+<p>准备 SamplerInputs 后调用 self.model.sample；此方法禁止设备同步。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/model_runner.py#L337-L368"><code translate="no">deepinfer/worker/model_runner.py:337-368</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def execute_sample(</code></p><p class="checksum">片段 SHA-256：<code>c1707348cb3a54e98038d0b4c1511a1239e60ff04bb26267ecaa710953400ad7</code></p></details>
+</section>
+<section class="evidence-row" id="E17">
+<h3><code>E17</code> · DeepseekModel.forward<span class="badge">源码确认</span></h3>
+<p>模型执行承载 attention/MoE 等层；启用 DFlash 时更新其主模型缓存。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/deepseek.py#L154-L225"><code translate="no">deepinfer/model_executor/models/deepseek.py:154-225</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def forward(</code></p><p class="checksum">片段 SHA-256：<code>b61aefa9636247e78cc364453c6836181ee0acbcbcf153c146ea63a2c1b658da</code></p></details>
+</section>
+<section class="evidence-row" id="E18">
+<h3><code>E18</code> · DeepseekForCausalLM.sample<span class="badge">源码确认</span></h3>
+<p>将主模型输出交给 Sampler；EPLB 处理附着为后处理函数。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/deepseek.py#L383-L411"><code translate="no">deepinfer/model_executor/models/deepseek.py:383-411</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def sample(</code></p><p class="checksum">片段 SHA-256：<code>8e4efc7e6509445d5e6c789a54e6b2a212748b194085e66de1fb42531afd12e7</code></p></details>
+</section>
+<section class="evidence-row" id="E19">
+<h3><code>E19</code> · Sampler.forward decode 分支<span class="badge">源码确认</span></h3>
+<p>先验证上一轮候选，再用确认 token 生成下一轮 draft 与置信度。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/sampler.py#L214-L301"><code translate="no">deepinfer/model_executor/layers/sampler.py:214-301</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>speculative_inputs = driver_inputs.speculative</code></p><p class="checksum">片段 SHA-256：<code>f9357100455535b951b90e01434533509d3b590beb79013a2654da1e4a51f4a7</code></p></details>
+</section>
+<section class="evidence-row" id="E20">
+<h3><code>E20</code> · LLMEngine._process_model_outputs<span class="badge">源码确认</span></h3>
+<p>处理 MTP 信息，scheduler.process_outputs 推进状态，再 build_request_outputs。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L687-L763"><code translate="no">deepinfer/engine/llm_engine.py:687-763</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def _process_model_outputs(</code></p><p class="checksum">片段 SHA-256：<code>705cf66d2a9b478bfa02e7e590e31642ca8caee65ff221da995521831a5b05b7</code></p></details>
+</section>
+<section class="evidence-row" id="E21">
+<h3><code>E21</code> · Scheduler._check_stop<span class="badge">源码确认</span></h3>
+<p>按 EOS、最大模型长度和 max_tokens 等停止生成；错误/中止另有分支。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L1035-L1053"><code translate="no">csrc/engine/scheduler.hpp:1035-1053</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>void _check_stop(</code></p><p class="checksum">片段 SHA-256：<code>f958261f12d4c77e3f0649981449289553b0c3f6e316febdf9bf7de79eec1ea0</code></p></details>
+</section>
+<section class="evidence-row" id="E22">
+<h3><code>E22</code> · EngineArgs.__post_init__<span class="badge">源码确认</span></h3>
+<p>根据 EngineType 注入 ZOS 默认值，且尊重显式环境覆盖。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/arg_utils.py#L48-L61"><code translate="no">deepinfer/engine/arg_utils.py:48-61</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def __post_init__(</code></p><p class="checksum">片段 SHA-256：<code>26a71dde3e84c96b6e75abcc9fc680d02cd4077a07dac86172307eaf223cac15</code></p></details>
+</section>
+<section class="evidence-row" id="E23">
+<h3><code>E23</code> · EngineType.default_zero_overhead_scheduling<span class="badge">源码确认</span></h3>
+<p>NORMAL 同时执行 prompt/completion；NORMAL 和 COMPLETION 默认 ZOS。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/engine_type.py#L4-L17"><code translate="no">deepinfer/engine/engine_type.py:4-17</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>class EngineType(</code></p><p class="checksum">片段 SHA-256：<code>975e9e67462cb3eb966e16aca828e1793266c7185c6815af9c6440855cfb7821</code></p></details>
+</section>
+<section class="evidence-row" id="E24">
+<h3><code>E24</code> · MTPVarlen.schedule<span class="badge">源码确认</span></h3>
+<p>根据历史接受率、forward 性能曲线和 sampler 时间估计选择总预算；无曲线回退到现有草稿长度。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/mtp_varlen.hpp#L150-L275"><code translate="no">csrc/engine/mtp_varlen.hpp:150-275</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>void schedule(const std::vector</code></p><p class="checksum">片段 SHA-256：<code>365411e43a845c512dae11f6d6da322c7d862b19096fce0b251a856fda190e2d</code></p></details>
+</section>
+<section class="evidence-row" id="E25">
+<h3><code>E25</code> · ConfidenceHead<span class="badge">源码确认</span></h3>
+<p>预测各 draft 位置的接受概率；置信度是估计，不是验证的替代品。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/mtp/dflash.py#L46-L81"><code translate="no">deepinfer/model_executor/models/mtp/dflash.py:46-81</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>class ConfidenceHead(</code></p><p class="checksum">片段 SHA-256：<code>4922327a864d7b50be2922ec47d42840d5fc565633f52e202691a80f3dceb38c</code></p></details>
+</section>
+<section class="evidence-row" id="E26">
+<h3><code>E26</code> · DFlash.sample_drafts / run_drafts<span class="badge">源码确认</span></h3>
+<p>生成 draft token 与置信度，写回候选状态；DSpark 方案的当前实现入口类名为 DFlash。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/mtp/dflash.py#L279-L387"><code translate="no">deepinfer/model_executor/models/mtp/dflash.py:279-387</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def sample_drafts(</code></p><p class="checksum">片段 SHA-256：<code>6cdf1d8cb2cbd49b3664d97b44bdc534897280fe204a8e0b0df2055889f5db8c</code></p></details>
+</section>
+<section class="evidence-row" id="E27">
+<h3><code>E27</code> · compute_seqlens_q_by_confidence_rates<span class="badge">源码确认</span></h3>
+<p>在设备端将总预算按最新置信度重新分配给请求；融合 remap scatter。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/tilelang_ops/schedule_mtp_varlen.py#L11-L33"><code translate="no">deepinfer/model_executor/layers/tilelang_ops/schedule_mtp_varlen.py:11-33</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def compute_seqlens_q_by_confidence_rates(</code></p><p class="checksum">片段 SHA-256：<code>854290772a5ddc44b9ace31192292ce18ee9af5d6e2a081692a02e17c640ff41</code></p></details>
+</section>
+<section class="evidence-row" id="E28">
+<h3><code>E28</code> · Worker._correct_seqlens_qk<span class="badge">源码确认</span></h3>
+<p>ZOS 的 CPU 元数据滞后，使用上一轮设备采样结果修正 q/k；变长 q 回传 pinned buffer。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/worker.py#L191-L246"><code translate="no">deepinfer/worker/worker.py:191-246</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def _correct_seqlens_qk(</code></p><p class="checksum">片段 SHA-256：<code>5eaa70ddb296d45989d1982fd7cb2d82b5ab377b556b42ef63ae68d93e4a0e0a</code></p></details>
+</section>
+<section class="evidence-row" id="E29">
+<h3><code>E29</code> · WorkerBase.warm_up_model<span class="badge">源码确认</span></h3>
+<p>CUDA graph 启用时捕获图；varlen 开启才采集 decode 性能曲线。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/base.py#L274-L289"><code translate="no">deepinfer/worker/base.py:274-289</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def warm_up_model(</code></p><p class="checksum">片段 SHA-256：<code>0b2df399cf1d3e9c42afb9e9cdf81e0e5be1686be57fd3784806e2dc37057dc9</code></p></details>
+</section>
+<section class="evidence-row" id="E30">
+<h3><code>E30</code> · UserBuffer 的依赖<span class="badge">源码确认</span></h3>
+<p>通信与矩阵计算缓冲对接 DeepEP / DeepGEMM；仅展示依赖关系。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/parallel_utils/userbuffer.py#L7-L24"><code translate="no">deepinfer/model_executor/parallel_utils/userbuffer.py:7-24</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>import deep_ep</code></p><p class="checksum">片段 SHA-256：<code>41c4062dc1306b9c629232997ee631914acfaeb2e375401966ba5e432f317b74</code></p></details>
+</section>
+<section class="evidence-row" id="E31">
+<h3><code>E31</code> · prefill_attn_varlen_sparse / decode_mla_mqa_sparse<span class="badge">源码确认</span></h3>
+<p>attention backend 调用 FlashMLA；后端细节超出主图。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/attention_backend.py#L2-L128"><code translate="no">deepinfer/model_executor/layers/attention_backend.py:2-128</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>from flash_mla import</code></p><p class="checksum">片段 SHA-256：<code>358a3c6b20686cded07ca9cabff1e248b4acf1d0afe11510d929bc5209433444</code></p></details>
+</section>
+<section class="evidence-row" id="E32">
+<h3><code>E32</code> · bf16_gemm<span class="badge">源码确认</span></h3>
+<p>矩阵乘后端直接调用 DeepGEMM。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/linear.py#L3-L36"><code translate="no">deepinfer/model_executor/layers/linear.py:3-36</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>import deep_gemm</code></p><p class="checksum">片段 SHA-256：<code>b5d0fd64e3a9666c971e64181952a214db3996aaf01efdbc8c33ffc2d5f5959f</code></p></details>
+</section>
+<section class="evidence-row" id="E33">
+<h3><code>E33</code> · gather / cp_broadcast<span class="badge">源码确认</span></h3>
+<p>rank 间 gather/broadcast 使用 torch.distributed；不是线上请求负载均衡。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/parallel_utils/communication_op.py#L12-L47"><code translate="no">deepinfer/model_executor/parallel_utils/communication_op.py:12-47</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def gather(</code></p><p class="checksum">片段 SHA-256：<code>e0725c3032f274f11f0c44089f0032ad232f71aeab784e50857d62076940f0a8</code></p></details>
+</section>
+<section class="evidence-row" id="D01">
+<h3><code>D01</code> · 官方支持表<span class="badge">官方文档描述</span></h3>
+<p>该版本支持 DeepSeek-V4.1-Flash、SM100 / Ascend 950，并列出特性与启用条件。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/README.md#L5-L36"><code translate="no">README.md:5-36</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>Supported models:</code></p><p class="checksum">片段 SHA-256：<code>f75bc6dd445c191158a1b987ddf7ff066eb2bfd37da954743b0e2c72d49e58cf</code></p></details>
+</section>
+<section class="evidence-row" id="D02">
+<h3><code>D02</code> · 官方发布范围<span class="badge">官方文档描述</span></h3>
+<p>完整 KV cache system、VE/Prefill/Decode 分离部署、跨 DP 副本负载均衡未包含在发布中。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/README.md#L38-L42"><code translate="no">README.md:38-42</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>Required for a complete inference service</code></p><p class="checksum">片段 SHA-256：<code>4c82689c7a992dc21a746ea3faa02c5f579a5113a7dc4bae8e762c18c9c94200</code></p></details>
+</section>
+<section class="evidence-row" id="E34">
+<h3><code>E34</code> · LLMEngine 分阶段与缓存钩子<span class="badge">源码确认</span></h3>
+<p>init_pd_split / do_save_kvcache 等是扩展钩子；存在钩子不等于完整生产集成。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L801-L829"><code translate="no">deepinfer/engine/llm_engine.py:801-829</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def init_pd_split(</code></p><p class="checksum">片段 SHA-256：<code>37607eb6c4d4128a9bfa61148a336b076263f43199cc575ef2519232d8202807</code></p></details>
+</section>
+<section class="evidence-row" id="D03">
+<h3><code>D03</code> · 生产 KVCache 与基础设施<span class="badge">官方文档描述</span></h3>
+<p>长期上下文复用是官方生产系统目标；缓存管理及负载均衡耦合内部设施，未完全开源。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/doc/inference_deployment_qa.md#L13-L27"><code translate="no">doc/inference_deployment_qa.md:13-27</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>3. **Retain KV cache</code></p><p class="checksum">片段 SHA-256：<code>395ddaf7b6dab38e7b72f14f242b55770050f3d97b99be497f33ccc6e32ab1e2</code></p></details>
+</section>
+<section class="evidence-row" id="D04">
+<h3><code>D04</code> · 官方 DSpark 描述<span class="badge">官方文档描述</span></h3>
+<p>Confidence Head 与变长验证的设计说明，及其和异步调度的配合。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/doc/inference_deployment_qa.md#L239-L265"><code translate="no">doc/inference_deployment_qa.md:239-265</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>## Speculative decoding</code></p><p class="checksum">片段 SHA-256：<code>2247309e3f06881d56fef54bd9f98020d24cb41b11cab9e05c94818bdfb800ed</code></p></details>
+</section>
+<section class="evidence-row" id="D05">
+<h3><code>D05</code> · 官方异步调度说明<span class="badge">官方文档描述</span></h3>
+<p>调度与后处理是 CPU 工作；目标是重叠执行以减少设备空闲。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/doc/inference_deployment_qa.md#L266-L276"><code translate="no">doc/inference_deployment_qa.md:266-276</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>## Asynchronous scheduling</code></p><p class="checksum">片段 SHA-256：<code>78a533c261f276901f3f23813e3e536ccf5a29aa55a239fe225075e789b2f688</code></p></details>
+</section>
+<section class="evidence-row" id="E35">
+<h3><code>E35</code> · nextn / varlen 配置<span class="badge">源码确认</span></h3>
+<p>最大草稿长度默认 5；ENABLE_MTP_VARLEN 描述器默认 False。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/environ.py#L129-L132"><code translate="no">deepinfer/environ.py:129-132</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>DEEPINFER_USE_NEXTN_DECODE =</code></p><p class="checksum">片段 SHA-256：<code>4860215f2eb603611f7c23c1d419552cf7930ecb7356e7401774466362f7a608</code></p></details>
+</section>
+<section class="evidence-row" id="E36">
+<h3><code>E36</code> · WorkerBase.run_workers<span class="badge">源码确认</span></h3>
+<p>driver 对 CP group 广播方法，再在本地调用；主图省略 follower 执行与通信。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/base.py#L290-L304"><code translate="no">deepinfer/worker/base.py:290-304</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def run_workers(</code></p><p class="checksum">片段 SHA-256：<code>cf407e955baf933738c8e3d7ecc7cee85f2bd7ef12a24f6dbc271ebdcf93e4fe</code></p></details>
+</section>
+<section class="evidence-row" id="E37">
+<h3><code>E37</code> · LLMEngine 初始化缓存管理与调度器<span class="badge">源码确认</span></h3>
+<p>设备缓存已初始化后建立块/状态槽管理器，注入 decode 性能曲线。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L265-L270"><code translate="no">deepinfer/engine/llm_engine.py:265-270</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>self.block_manager = BlockManager(</code></p><p class="checksum">片段 SHA-256：<code>a22de26ade86eb28dc2357550d58eb693fa9768478bdd5622e14e2cd72b1a353</code></p></details>
+</section>
+<section class="evidence-row" id="E38">
+<h3><code>E38</code> · ModelRunner.load_model<span class="badge">源码确认</span></h3>
+<p>get_model 得到模型对象，并检查 SWA bounded replay 保留长度覆盖 window + backtracking。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/model_runner.py#L96-L112"><code translate="no">deepinfer/worker/model_runner.py:96-112</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>def load_model(</code></p><p class="checksum">片段 SHA-256：<code>364deb4676beb8a3df6ba45b4cc8627440025abfab44669e77244d9c73892d56</code></p></details>
+</section>
+<section class="evidence-row" id="E39">
+<h3><code>E39</code> · LLMEngine 类说明<span class="badge">源码确认</span></h3>
+<p>当前发布不含 online-serving wrapper，LLM 包装用于离线批量推理。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L130-L142"><code translate="no">deepinfer/engine/llm_engine.py:130-142</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>class LLMEngine:</code></p><p class="checksum">片段 SHA-256：<code>dbc187db8cb18119f3237029ac9d726fb8bca0ab53f6436e6fc49e6941069429</code></p></details>
+</section>
+<section class="evidence-row" id="E40">
+<h3><code>E40</code> · MMProcessor<span class="badge">源码确认</span></h3>
+<p>存在多模态片段处理基础；不意味着视觉编码器分离部署服务已交付。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/ve/processor/mm_processor.py#L10-L30"><code translate="no">deepinfer/ve/processor/mm_processor.py:10-30</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>class MMProcessor:</code></p><p class="checksum">片段 SHA-256：<code>b0c9df6907ed9c8c1dba1e2d2bccb882c90275e8ccbf82c953d17f3ed7a95c28</code></p></details>
+</section>
+<section class="evidence-row" id="E41">
+<h3><code>E41</code> · process_MTPInfo<span class="badge">源码确认</span></h3>
+<p>对各位置置信度做累乘，移位保存历史预测接受率；不是直接把真实接受率当预测值。</p>
+<a class="evidence-path" href="https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L1196-L1271"><code translate="no">csrc/engine/scheduler.hpp:1196-1271</code> ↗</a>
+<details><summary>核对锚点与摘要</summary><p>起始行：<code>inline void process_MTPInfo(</code></p><p class="checksum">片段 SHA-256：<code>7cdb1d578f0378608ee1b4ba20221172d8ff9a53c21d7d506e4f4e1a34aa4cb4</code></p></details>
+</section>
+<nav class="page-next" aria-label="连续阅读"><a href="source-map.html">← 源码地图</a><a href="about.html">使用与归属 →</a></nav></article></div></main>
+  <footer class="site-footer">
+    <div><strong translate="no">deepinfer-atlas</strong><span>DeepInfer 非官方可视化源码导读</span></div>
+    <p>分析 <a href="evidence.html#baseline"><code>774ce244b87c</code></a> · 核对于 <time datetime="2026-10-20">2026-10-20</time> · <a href="about.html">使用与归属</a></p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,204 @@
+{
+  "architecture": {
+    "type": "architecture",
+    "nodes": {
+      "offline": [
+        "E01"
+      ],
+      "llm": [
+        "E02",
+        "E03",
+        "E04"
+      ],
+      "engine": [
+        "E06",
+        "E07",
+        "E20"
+      ],
+      "scheduler": [
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "blocks": [
+        "E11",
+        "E37"
+      ],
+      "worker": [
+        "E13",
+        "E15",
+        "E16"
+      ],
+      "model": [
+        "E17",
+        "E18",
+        "E19"
+      ],
+      "cache": [
+        "E12"
+      ],
+      "kernels": [
+        "E30",
+        "E31",
+        "E32",
+        "E33"
+      ]
+    },
+    "relationships": {
+      "entry-submit": [
+        "E01"
+      ],
+      "entry-engine": [
+        "E03",
+        "E04"
+      ],
+      "engine-schedule": [
+        "E06"
+      ],
+      "scheduler-blocks": [
+        "E08",
+        "E09",
+        "E11"
+      ],
+      "engine-worker": [
+        "E07",
+        "E13"
+      ],
+      "worker-model": [
+        "E15",
+        "E16",
+        "E18"
+      ],
+      "model-cache": [
+        "E12",
+        "E15"
+      ],
+      "model-kernels": [
+        "E30",
+        "E31",
+        "E32"
+      ]
+    },
+    "simplification": "不表示完整时间序；模型包折叠为一个节点，设备缓存画为其张量的提供者；虚线仅实现依赖。"
+  },
+  "request": {
+    "type": "sequence",
+    "nodes": {
+      "caller": [
+        "E01",
+        "E02",
+        "E04"
+      ],
+      "engine": [
+        "E06",
+        "E07",
+        "E20"
+      ],
+      "scheduler": [
+        "E08",
+        "E10",
+        "E21"
+      ],
+      "worker": [
+        "E13",
+        "E14",
+        "E15",
+        "E16"
+      ],
+      "executor": [
+        "E17",
+        "E18",
+        "E19"
+      ]
+    },
+    "relationships": {
+      "submit": [
+        "E03",
+        "E05"
+      ],
+      "step": [
+        "E04"
+      ],
+      "schedule": [
+        "E06"
+      ],
+      "metadata": [
+        "E10"
+      ],
+      "dispatch": [
+        "E07"
+      ],
+      "forward": [
+        "E15"
+      ],
+      "sample": [
+        "E16",
+        "E19"
+      ],
+      "sample-ready": [
+        "E14"
+      ],
+      "post-process": [
+        "E14",
+        "E07"
+      ],
+      "advance": [
+        "E20",
+        "E21"
+      ],
+      "collect": [
+        "E04",
+        "E13"
+      ]
+    },
+    "simplification": "展示逻辑阶段；默认 ZOS decode 的 post_process 处理上一轮，采样 event 也属于对应状态而非即时同步返回；flush、rank、初始化与异常省略。"
+  },
+  "scope": {
+    "type": "architecture",
+    "nodes": {
+      "released-entry": [
+        "E01",
+        "E02",
+        "E39"
+      ],
+      "released-runtime": [
+        "E06",
+        "E08",
+        "E12",
+        "E18"
+      ],
+      "released-compute": [
+        "D01",
+        "E30",
+        "E31",
+        "E32"
+      ],
+      "hooks-types": [
+        "E23",
+        "D02"
+      ],
+      "hooks-cache": [
+        "E34",
+        "E12"
+      ],
+      "hooks-vision": [
+        "E40",
+        "D02"
+      ],
+      "missing-store": [
+        "D02",
+        "D03"
+      ],
+      "missing-routing": [
+        "D02",
+        "D03"
+      ],
+      "missing-service": [
+        "D02",
+        "E39"
+      ]
+    },
+    "relationships": {},
+    "simplification": "三类能力归组，没有调用连线；中栏仅说明集成基础。"
+  }
+}

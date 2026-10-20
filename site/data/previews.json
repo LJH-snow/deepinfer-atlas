@@ -1,0 +1,59 @@
+[
+  {
+    "diagram": "architecture",
+    "artifact_sha256": "d18e61258c6770bd3a5b2d79d32c5ce406b01ed214a87c4c102173a942606391",
+    "files": {
+      "png": {
+        "path": "site/assets/architecture.png",
+        "sha256": "d7e69eae93afafdadcdb094fd5cc2cf8131c48cc49bd0cee98e6802cb1cc8090",
+        "bytes": 391254,
+        "width": 4170,
+        "height": 2370
+      },
+      "svg": {
+        "path": "site/assets/architecture.svg",
+        "sha256": "9542f0c7b8dd2969026293f789160043b54c4260fceb7f0abbac480b505b3dde",
+        "bytes": 55177
+      }
+    },
+    "method": "Archify viewer export menu, light theme, reset view"
+  },
+  {
+    "diagram": "request",
+    "artifact_sha256": "8b2504f026f30581c602d6d24cc55d2f4f9b7c0620555b61626c03951889308c",
+    "files": {
+      "png": {
+        "path": "site/assets/request.png",
+        "sha256": "d4ec4c76c102402807d6c9d1566bec76b7a7cba7cd01df70dbc9f5d5319e5af4",
+        "bytes": 405627,
+        "width": 4280,
+        "height": 2240
+      },
+      "svg": {
+        "path": "site/assets/request.svg",
+        "sha256": "61ee76534e72516d2fd4639f00e7708b1651f6f6ac7efd60380af2d19ef5408d",
+        "bytes": 53070
+      }
+    },
+    "method": "Archify viewer export menu, light theme, reset view"
+  },
+  {
+    "diagram": "scope",
+    "artifact_sha256": "35a4948c05e931199b8dad3d2c36ce5ff0005dc3a836129a940bb0f27d64146e",
+    "files": {
+      "png": {
+        "path": "site/assets/scope.png",
+        "sha256": "8edba1e262f285c681c3f077b724f239955aecd85bc88cdffb739c10ebd29dc1",
+        "bytes": 401194,
+        "width": 3990,
+        "height": 2370
+      },
+      "svg": {
+        "path": "site/assets/scope.svg",
+        "sha256": "7b6d977367791b2ef713a7b3c1a2b49dc5a7769ac9b0f2af94ef211e7b8b9ee3",
+        "bytes": 53115
+      }
+    },
+    "method": "Archify viewer export menu, light theme, reset view"
+  }
+]

@@ -1,0 +1,25 @@
+<h2 id="problem">先理解它在协调什么</h2>
+<p>模型每生成一段文本，都要反复执行计算、选择下一个 token，并保留此前上下文的中间结果。<strong>推理引擎</strong>负责把这些工作组织成批次，让计算与显存使用配合起来。DeepInfer 当前开源版本提供离线推理入口，以及调度、模型和采样运行时；官方还提供了针对支持硬件的算子与并行实现。</p>
+<div class="source-links">{{src:D01}} {{src:E02}} {{src:E06}}</div>
+<figure class="article-figure">
+  <a href="diagrams/architecture.html"><img src="assets/architecture.png" alt="九节点架构图：离线示例进入 LLM 和 LLMEngine；引擎分别协调 Scheduler 和 Worker；调度器管理块，执行层访问模型、设备缓存和算子。" width="4170" height="2370"></a>
+  <figcaption>绿色实线表示控制调用，灰色实线表示数据/资源操作，紫色虚线表示实现依赖。图中的 <code>Model Executor</code> 是 <code>model_executor/</code> 目录的概括，不是一个同名单类。省略回调、rank 复制和生成循环，避免把架构误读成完整时间线。</figcaption>
+  <div class="figure-action"><a class="button" href="diagrams/architecture.html">打开交互图 ↗</a><a href="assets/architecture.png" download>下载 PNG 预览</a></div>
+</figure>
+<h2 id="modules">沿职责理解九个节点</h2>
+<dl class="module-map">
+  <div><dt>离线示例</dt><dd>创建 LLM、准备 prompts 与采样参数、调用 generate，最后解码并输出结果。示例通过 <code>launch_dp</code> 启动数据并行执行；主图把多个 rank 折叠为一个逻辑入口。<div class="source-links">{{src:E01}}</div></dd></div>
+  <div><dt><code>LLM.generate()</code></dt><dd>面向调用者的批量 API。必要时把文本转为 token ID，逐项提交请求，循环运行引擎，最终按输入顺序返回结果。它承担了离线循环，当前发布没有在线 serving wrapper。<div class="source-links">{{src:E02}} {{src:E03}} {{src:E04}}</div></dd></div>
+  <div><dt><code>LLMEngine</code></dt><dd>协调请求状态、tokenizer、调度器与 Worker。<code>step()</code> 取得批次后下发执行；Worker 通过回调让引擎处理已就绪输出。<div class="source-links">{{src:E05}} {{src:E06}} {{src:E07}}</div></dd></div>
+  <div><dt><code>Scheduler</code></dt><dd>C++ 调度器组织 waiting / running 队列，决定这一步处理哪些序列、多少 token，并生成模型需要的元数据。它既处理 prefill，也处理 decode；每步的批次不是一成不变的。<div class="source-links">{{src:E08}} {{src:E09}} {{src:E10}}</div></dd></div>
+  <div><dt><code>BlockManager</code></dt><dd>管理可分配块编号与引用计数，使调度器知道缓存空间何时够用、何时可以回收。它不执行 attention，也不负责跨机器长期存储。引擎还可建立独立的 state slot 管理器。<div class="source-links">{{src:E11}} {{src:E37}}</div></dd></div>
+  <div><dt><code>Worker / ModelRunner</code></dt><dd>Worker 安排 forward、同步边界、采样与输出回调；ModelRunner 准备设备输入，选择 CUDA graph replay 或模型调用。多 rank 的方法广播与各 rank 计算在图中被折叠。<div class="source-links">{{src:E13}} {{src:E15}} {{src:E16}} {{src:E36}}</div></dd></div>
+  <div><dt>Model Executor</dt><dd>模型类、attention / MoE 层、Sampler 和 draft 实现所在的目录。<code>DeepseekForCausalLM.sample()</code> 把主模型输出交给 Sampler。<strong>MoE</strong>（Mixture of Experts）指每个 token 只路由到部分专家计算的模型结构。<div class="source-links">{{src:E17}} {{src:E18}} {{src:E19}}</div></dd></div>
+  <div><dt><code>CacheEngine</code></dt><dd>分配并组织设备侧的 KV blocks 与 state blocks。<strong>KV cache</strong> 保存 attention 已算出的键/值相关中间结果，使后续 token 可复用上下文；在此模型中还涉及压缩、滑动窗口与状态布局。图中“读写”表示模型使用其暴露的张量，不是每层都调用 CacheEngine 对象方法。<div class="source-links">{{src:E12}}</div></dd></div>
+  <div><dt>算子与通信</dt><dd>FlashMLA、DeepGEMM、DeepEP、TileLang 等承载具体计算与数据交换。它们是执行层依赖，不能从目录依赖图推断为每个请求都顺序调用所有算子。<div class="source-links">{{src:E30}} {{src:E31}} {{src:E32}} {{src:E33}}</div></dd></div>
+</dl>
+<h2 id="relationships">三种关系，分别怎么读</h2>
+<div class="table-wrap"><table><caption>架构图的语义规则</caption><thead><tr><th scope="col">关系</th><th scope="col">例子</th><th scope="col">含义</th></tr></thead><tbody><tr><td>控制</td><td>Engine → Worker</td><td>下发 <code>execute_model_step</code>；不意味着 CPU 等待整个设备计算结束。</td></tr><tr><td>数据 / 资源</td><td>模型 → 设备缓存</td><td>读取/更新运行时缓存张量；调度器另行分配可用块编号。</td></tr><tr><td>实现依赖</td><td>Model Executor ⇢ 算子</td><td>依赖后端实现；没有定义统一同步调用顺序。</td></tr></tbody></table></div>
+<p>模型输出沿 Worker → Engine 回调进入 C++ 输出处理，随后 LLM 聚合。为了让主图保持清晰，这条回路放在<a href="request.html">请求时序</a>中展开；默认 decode 的 CPU / 设备重叠则在<a href="performance.html#async">异步调度专题</a>中展开。</p>
+<h2 id="boundary">先保留一个重要边界</h2>
+<div class="callout"><p><strong>设备缓存已经实现，完整缓存服务仍需补齐。</strong>当前仓库中的张量布局、块管理和保存扩展点，与官方生产系统中的长期 KVCache Storage、缓存命中路由和跨 DP 负载均衡分属不同层次。请继续阅读<a href="scope.html">开源边界</a>。</p></div>

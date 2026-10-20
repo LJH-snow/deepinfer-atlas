@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9fc">
+  <meta name="description" content="DeepInfer 非官方可视化源码导读，约 10 分钟建立从入口到设备执行的源码地图。">
+  <title>首页 · deepinfer-atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳转到正文</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" aria-label="deepinfer-atlas 首页"><span class="mark" aria-hidden="true">da</span><span translate="no">deepinfer<span class="wordmark-tail">/atlas</span></span></a>
+      <nav class="primary-nav" aria-label="主导航"><a href="architecture.html">架构总览</a><a href="request.html">请求时序</a><a href="scope.html">开源边界</a><a href="performance.html">性能优化</a><a href="source-map.html">源码地图</a><a href="evidence.html">版本与证据</a></nav>
+      <a class="upstream-link" href="https://github.com/deepseek-ai/DeepInfer/tree/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01">上游源码 ↗</a>
+    </div>
+  </header>
+  <main id="main" tabindex="-1"><div class="home"><section class="hero" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="eyebrow">DeepInfer 非官方可视化源码导读</p>
+    <h1 id="hero-title">读懂推理引擎，<br>从一张图开始。</h1>
+    <p class="intro">约 10 分钟，从 <code>LLM.generate()</code> 读懂一次推理。</p>
+    <div class="actions"><a class="button" href="architecture.html">开始阅读 <span aria-hidden="true">→</span></a><a class="button secondary" href="source-map.html">源码地图</a></div>
+  </div>
+  <figure class="hero-figure">
+    <div class="figure-label"><span>入口 → 调度 → 设备执行</span><span>架构总览 / 9 个节点</span></div>
+    <a class="preview-link" href="diagrams/architecture.html" aria-label="打开可缩放的 DeepInfer 交互架构图"><img src="assets/architecture.png" alt="DeepInfer 架构预览：LLM 入口通过引擎协调 C++ 调度器、块管理与 Worker；模型执行依赖算子和设备 KV 缓存。" width="4170" height="2370" fetchpriority="high"></a>
+    <figcaption>真实源码关系的简化视图。<a href="diagrams/architecture.html">放大、追踪关系与导出 ↗</a></figcaption>
+  </figure>
+</section>
+<div class="baseline-strip"><span>上游 <a href="https://github.com/deepseek-ai/DeepInfer/tree/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01">deepseek-ai/DeepInfer</a> · <code>774ce244b87c</code></span><span>核对 2026-10-20 · <a href="evidence.html">46 条可核查证据</a></span></div>
+<section class="home-section" aria-labelledby="questions">
+  <h2 id="questions">带着问题，进入源码。</h2>
+  <p class="section-intro">DeepInfer 把批次调度、模型计算、采样和缓存管理组织起来，让多个生成请求高效共用加速设备。本图谱帮助你读懂这套执行机制，也标明当前发布与完整服务的边界。</p>
+  <div class="question-list">
+    <a class="question-link" href="architecture.html"><span class="number">01</span><span><strong>它解决什么问题？模块如何协作？</strong><small>从入口、调度层到设备运行时，先建立全局视角。</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+    <a class="question-link" href="request.html"><span class="number">02</span><span><strong>一次请求如何走完生成循环？</strong><small>分词、入队、批次、forward、采样与输出。</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+    <a class="question-link" href="scope.html"><span class="number">03</span><span><strong>离完整线上服务，还差什么？</strong><small>设备缓存、长期存储、分离部署与跨副本路由。</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+    <a class="question-link" href="performance.html"><span class="number">04</span><span><strong>关键性能优化发生在哪里？</strong><small>CPU / 设备重叠与 DSpark 验证预算。</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+    <a class="question-link" href="source-map.html"><span class="number">05</span><span><strong>想深入研究，应从哪里读？</strong><small>三条由浅入深的路线，保留真实符号与下一跳。</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+    <a class="question-link" href="evidence.html"><span class="number">06</span><span><strong>这些图和结论，依据是什么？</strong><small>固定 commit、文件行号、证据类型和解释边界。</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+  </div>
+</section>
+<section class="home-section reading-order" aria-labelledby="ten-minutes">
+  <h2 id="ten-minutes">10 分钟阅读路径</h2>
+  <ol>
+    <li><a href="architecture.html">先看模块</a><small>约 2 分钟</small></li>
+    <li><a href="request.html">跟随请求</a><small>约 3 分钟</small></li>
+    <li><a href="scope.html">确认边界</a><small>约 2 分钟</small></li>
+    <li><a href="performance.html">定位优化</a><small>约 3 分钟</small></li>
+  </ol>
+</section>
+<section class="home-section" aria-labelledby="trust">
+  <h2 id="trust">每张图，都能回到代码。</h2>
+  <p class="section-intro">本项目由社区独立整理，与 DeepSeek 无隶属关系。核心路径已按固定版本核对；示意图省略的并行细节会在正文标明。本项目没有执行模型推理或硬件性能复测。</p>
+  <p><a href="evidence.html#types">了解证据分级</a> · <a href="about.html#regenerate">查看生成与维护方法</a></p>
+</section>
+</div></main>
+  <footer class="site-footer">
+    <div><strong translate="no">deepinfer-atlas</strong><span>DeepInfer 非官方可视化源码导读</span></div>
+    <p>分析 <a href="evidence.html#baseline"><code>774ce244b87c</code></a> · 核对于 <time datetime="2026-10-20">2026-10-20</time> · <a href="about.html">使用与归属</a></p>
+  </footer>
+</body>
+</html>

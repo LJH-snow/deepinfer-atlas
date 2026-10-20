@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "records": [
+    {
+      "diagram": "architecture",
+      "query": "BlockManager",
+      "hash": "#focus=blocks",
+      "selectedName": "聚焦BlockManager，块与状态槽生命周期, 架构组件",
+      "selectedCenterVisible": true,
+      "passportClosed": true,
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "diagram": "request",
+      "query": "Model / Sampler",
+      "hash": "#focus=executor",
+      "selectedName": "聚焦Model / Sampler，设备计算与候选验证, 时序参与者",
+      "selectedCenterVisible": true,
+      "passportClosed": true,
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "diagram": "scope",
+      "query": "完整在线服务",
+      "hash": "#focus=missing-service",
+      "selectedName": "聚焦完整在线服务，在线 wrapper 与分离部署集成, 完整服务：尚未包含",
+      "selectedCenterVisible": true,
+      "passportClosed": true,
+      "width": 390,
+      "scrollWidth": 390
+    }
+  ],
+  "failures": []
+}

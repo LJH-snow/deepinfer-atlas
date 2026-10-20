@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/Admin/Desktop/deepinfer-atlas/diagrams/specs/architecture.json",
+  "output": "/Users/Admin/Desktop/deepinfer-atlas/site/diagrams/architecture.html",
+  "specification": {
+    "sha256": "a6e1b35df58dcde3e71a9e0a5ef995db61c215960754c1ddb1d8ab5f6960637b",
+    "bytes": 4826
+  },
+  "artifact": {
+    "sha256": "d18e61258c6770bd3a5b2d79d32c5ce406b01ed214a87c4c102173a942606391",
+    "bytes": 711671
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

@@ -1,0 +1,787 @@
+[
+  {
+    "id": "E01",
+    "kind": "source",
+    "path": "examples/offline_inference.py",
+    "start": 34,
+    "end": 113,
+    "symbol": "main → LLM.generate",
+    "claim": "准备模型、输入与采样参数；调用 generate；示例把 token IDs 解码为文本。",
+    "anchor": "def main(",
+    "checks": [
+      "outputs = llm.generate(",
+      "prepare_offline_prompts(dp_rank, llm)"
+    ],
+    "file_sha256": "7392a46c7b5c4cc6d0b47d6a818c4be79f12e95a015d14243a9023af2a95ca88",
+    "excerpt_sha256": "b0633c95a5ac4e4d6cd0c7ca27a5f036bf3a33fff573611cf58b1ac6661893e0",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/examples/offline_inference.py#L34-L113"
+  },
+  {
+    "id": "E02",
+    "kind": "source",
+    "path": "deepinfer/entrypoints/llm.py",
+    "start": 90,
+    "end": 142,
+    "symbol": "LLM.generate",
+    "claim": "逐项 _add_request，然后运行 _run_engine；不是 HTTP 入口。",
+    "anchor": "def generate(",
+    "checks": [
+      "self._add_request(",
+      "return self._run_engine"
+    ],
+    "file_sha256": "069a5333d9f47047ccc87584792627dfa6eee9cf93bdc046107cbd0218a6bada",
+    "excerpt_sha256": "ea9291343845d4b0c4025bd97c6093086411e2ba41eb51e216ef7aca46c89206",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/entrypoints/llm.py#L90-L142"
+  },
+  {
+    "id": "E03",
+    "kind": "source",
+    "path": "deepinfer/entrypoints/llm.py",
+    "start": 144,
+    "end": 166,
+    "symbol": "LLM._add_request",
+    "claim": "必要时分词，复制 SamplingParams，传给引擎 add_request。",
+    "anchor": "def _add_request(",
+    "checks": [
+      "tokenizer.encode(prompt)",
+      "self.llm_engine.add_request("
+    ],
+    "file_sha256": "069a5333d9f47047ccc87584792627dfa6eee9cf93bdc046107cbd0218a6bada",
+    "excerpt_sha256": "9f4d27ce9ec562e70817c17a178c544f1e49bd9617fce39dc399139ed280275d",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/entrypoints/llm.py#L144-L166"
+  },
+  {
+    "id": "E04",
+    "kind": "source",
+    "path": "deepinfer/entrypoints/llm.py",
+    "start": 168,
+    "end": 195,
+    "symbol": "LLM._run_engine",
+    "claim": "循环 step；结束前 flush；clone 池对象并按请求序聚合，可选解码。",
+    "anchor": "def _run_engine(",
+    "checks": [
+      "flush_inflight_reqs()",
+      "RequestOutput.clone(raw_output)",
+      "sorted(outputs, key=int)"
+    ],
+    "file_sha256": "069a5333d9f47047ccc87584792627dfa6eee9cf93bdc046107cbd0218a6bada",
+    "excerpt_sha256": "7b1272d27c9c51793fd1c38ea26015c3ef81d200e155e140a431bfe90f129610",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/entrypoints/llm.py#L168-L195"
+  },
+  {
+    "id": "E05",
+    "kind": "source",
+    "path": "deepinfer/engine/llm_engine.py",
+    "start": 620,
+    "end": 633,
+    "symbol": "LLMEngine.add_request / _enqueue",
+    "claim": "把 Sequence 加入 C++ Scheduler；有结构化输出时需等待 matcher 构建。",
+    "anchor": "def _enqueue(",
+    "checks": [
+      "self.scheduler.add_sequence(s)",
+      "self.so_matcher_builder.submit"
+    ],
+    "file_sha256": "a636d60ca5711f6b7c21e68370c3bd9c2de6fc3f4439a7429ca4f572f0edeebe",
+    "excerpt_sha256": "566c0da36922f3dbfdc256c1a0378237fc199d9863fed5f8c18bc4327b492b25",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L620-L633"
+  },
+  {
+    "id": "E06",
+    "kind": "source",
+    "path": "deepinfer/engine/llm_engine.py",
+    "start": 860,
+    "end": 960,
+    "symbol": "LLMEngine.step",
+    "claim": "schedule 选出元数据与批次，再下发模型执行。",
+    "anchor": "def step(self)",
+    "checks": [
+      "self.scheduler.schedule(",
+      "self._execute_model_async_step("
+    ],
+    "file_sha256": "a636d60ca5711f6b7c21e68370c3bd9c2de6fc3f4439a7429ca4f572f0edeebe",
+    "excerpt_sha256": "817a0464e349dcc4192b8a8ddcd95f26684438d1794c57d678786b8676daf6aa",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L860-L960"
+  },
+  {
+    "id": "E07",
+    "kind": "source",
+    "path": "deepinfer/engine/llm_engine.py",
+    "start": 961,
+    "end": 1016,
+    "symbol": "LLMEngine._execute_model_async_step / post_process",
+    "claim": "通过 Worker.execute_model_step 执行；post_process 回调处理输出并反馈 MTP runtime。",
+    "anchor": "def _execute_model_async_step(",
+    "checks": [
+      "\"execute_model_step\"",
+      "self._process_model_outputs(",
+      "self.scheduler.update_mtp_runtime("
+    ],
+    "file_sha256": "a636d60ca5711f6b7c21e68370c3bd9c2de6fc3f4439a7429ca4f572f0edeebe",
+    "excerpt_sha256": "e5afa5c87c3477321ab95de7e1b1d0602b2a60f506e380185714457d2e6e1bd9",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L961-L1016"
+  },
+  {
+    "id": "E08",
+    "kind": "source",
+    "path": "csrc/engine/scheduler.hpp",
+    "start": 275,
+    "end": 558,
+    "symbol": "Scheduler._schedule",
+    "claim": "在等待/运行队列、prefill 与 decode 之间组织批次，受块和计算预算约束。",
+    "anchor": "std::unique_ptr<SchedulerOutputs> _schedule()",
+    "checks": [
+      "_schedule_decode(acquire)",
+      "acquire.allocate_seq(*seq)"
+    ],
+    "file_sha256": "c14de4d5341170227b82ddf2d146d9c6a337937885a6886237aab5a7238da5db",
+    "excerpt_sha256": "5993f0740de902be171451fc04e1160f40f6e20f08dc555bf3e27180b12e356f",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L275-L558"
+  },
+  {
+    "id": "E09",
+    "kind": "source",
+    "path": "csrc/engine/scheduler.hpp",
+    "start": 559,
+    "end": 663,
+    "symbol": "Scheduler._schedule_decode",
+    "claim": "为 decode 追加槽、处理资源不足；MTPVarlen 分配 seqlens_q。",
+    "anchor": "std::unique_ptr<SchedulerOutputs> _schedule_decode(",
+    "checks": [
+      "_append_slot(*seq)",
+      "_mtp_varlen.schedule(scheduled, seqlens_q)"
+    ],
+    "file_sha256": "c14de4d5341170227b82ddf2d146d9c6a337937885a6886237aab5a7238da5db",
+    "excerpt_sha256": "fcffd2cff540aed2c6796acef2c3b6267d051358cf7c6fd29558213699fe2801",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L559-L663"
+  },
+  {
+    "id": "E10",
+    "kind": "source",
+    "path": "csrc/engine/scheduler.hpp",
+    "start": 667,
+    "end": 736,
+    "symbol": "Scheduler.schedule",
+    "claim": "构造每条 SequenceMetadata，记录在途长度和本轮 token 预算。",
+    "anchor": "py::tuple schedule(",
+    "checks": [
+      "sequence_metadata_pool->allocate(",
+      "total_inflight_tokens"
+    ],
+    "file_sha256": "c14de4d5341170227b82ddf2d146d9c6a337937885a6886237aab5a7238da5db",
+    "excerpt_sha256": "9b9d84b8ede5611ee7493f2637903435d4debf50387a1d3bc9d1b8cf4b60ab2a",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L667-L736"
+  },
+  {
+    "id": "E11",
+    "kind": "source",
+    "path": "csrc/engine/block_manager.hpp",
+    "start": 119,
+    "end": 187,
+    "symbol": "BlockManager",
+    "claim": "管理引擎缓存块编号的分配、固定与回收；不是分布式缓存服务。",
+    "anchor": "struct BlockManager :",
+    "checks": [
+      "allocate_single_nolock",
+      "free_blocks_nolock"
+    ],
+    "file_sha256": "83eabc936b4316b70254f8772041669de3e6a8878b4f12859e3a7ddd17c395d0",
+    "excerpt_sha256": "5b5fd0ecefdd50d6422f355f5cd70b307dbfa0f62d0372f9767c26d947cbc312",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/block_manager.hpp#L119-L187"
+  },
+  {
+    "id": "E12",
+    "kind": "source",
+    "path": "deepinfer/worker/cache_engine.py",
+    "start": 851,
+    "end": 973,
+    "symbol": "CacheEngine.do_allocate_kv_cache",
+    "claim": "分配设备 KV blocks、state blocks，形成 GPUCacheInterface；不能据此推断长期缓存服务已提供。",
+    "anchor": "class CacheEngine:",
+    "checks": [
+      "self.do_allocate_kv_cache()",
+      "self._alloc_gpu_uint8(",
+      "GPUCacheInterface("
+    ],
+    "file_sha256": "ca3d80120fe6bc50971b180278dd575d585e1a6c7a3c2174a8a6fd6213454161",
+    "excerpt_sha256": "23e244f82fc4a5a9cd0fa45a66e769e6e3c50c7c7d7cc7555cfd4a67074ef906",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/cache_engine.py#L851-L973"
+  },
+  {
+    "id": "E13",
+    "kind": "source",
+    "path": "deepinfer/worker/worker.py",
+    "start": 89,
+    "end": 189,
+    "symbol": "Worker.execute_model_step",
+    "claim": "先 launch 当前 forward，后处理上一轮，再采样当前轮；ZOS decode 延后当前后处理。",
+    "anchor": "def execute_model_step(",
+    "checks": [
+      "self.model_runner.execute_main_model(",
+      "self._post_process_step(self.prev_step_state)",
+      "self.model_runner.execute_sample(",
+      "self.prev_step_state = curr_step_state"
+    ],
+    "file_sha256": "ad32e595d9ab289dff1a7709136431ac60dae709e9e5123ae42eb0ebf7c30cbb",
+    "excerpt_sha256": "cf90c30dfedbca4799c1ba4ee3fd8e2e85840fa34f5a3ded8aefcda5df97c8fd",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/worker.py#L89-L189"
+  },
+  {
+    "id": "E14",
+    "kind": "source",
+    "path": "deepinfer/worker/worker.py",
+    "start": 248,
+    "end": 283,
+    "symbol": "Worker._post_process_step / flush_inflight_reqs",
+    "claim": "等待 sample_end_evt，再运行 ModelRunner 后处理和 Engine 回调；flush 排空在途结果。",
+    "anchor": "def _post_process_step(",
+    "checks": [
+      "sample_end_evt.synchronize()",
+      "self.engine_callbacks.post_process_fn(step_state)",
+      "self.prev_step_state = None"
+    ],
+    "file_sha256": "ad32e595d9ab289dff1a7709136431ac60dae709e9e5123ae42eb0ebf7c30cbb",
+    "excerpt_sha256": "30fc6349298cec43ed80bb9582acf8cd7373b795e008b67cec3610f2c136c2ba",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/worker.py#L248-L283"
+  },
+  {
+    "id": "E15",
+    "kind": "source",
+    "path": "deepinfer/worker/model_runner.py",
+    "start": 308,
+    "end": 336,
+    "symbol": "ModelRunner.execute_main_model",
+    "claim": "准备输入；CUDA graph replay 或 self.model forward；此方法禁止设备同步。",
+    "anchor": "def execute_main_model(",
+    "checks": [
+      "forbid_cuda_sync()",
+      "self.cuda_graph_runner.replay(",
+      "self.model(kv_caches="
+    ],
+    "file_sha256": "9e2e18d136c9e0c9f23905ff994e9d23afaa94aa7a133d425e7fc1fc069033ef",
+    "excerpt_sha256": "44445fa1661ea15dc39863a65824087a0d789d1999319d9f76a9973124de91be",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/model_runner.py#L308-L336"
+  },
+  {
+    "id": "E16",
+    "kind": "source",
+    "path": "deepinfer/worker/model_runner.py",
+    "start": 337,
+    "end": 368,
+    "symbol": "ModelRunner.execute_sample",
+    "claim": "准备 SamplerInputs 后调用 self.model.sample；此方法禁止设备同步。",
+    "anchor": "def execute_sample(",
+    "checks": [
+      "self.prepare_sampler_inputs(",
+      "self.model.sample("
+    ],
+    "file_sha256": "9e2e18d136c9e0c9f23905ff994e9d23afaa94aa7a133d425e7fc1fc069033ef",
+    "excerpt_sha256": "c1707348cb3a54e98038d0b4c1511a1239e60ff04bb26267ecaa710953400ad7",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/model_runner.py#L337-L368"
+  },
+  {
+    "id": "E17",
+    "kind": "source",
+    "path": "deepinfer/model_executor/models/deepseek.py",
+    "start": 154,
+    "end": 225,
+    "symbol": "DeepseekModel.forward",
+    "claim": "模型执行承载 attention/MoE 等层；启用 DFlash 时更新其主模型缓存。",
+    "anchor": "def forward(",
+    "checks": [
+      "dflash.update_main_cache("
+    ],
+    "file_sha256": "881fe2839b34d191ffd50ca6d5b7b57443b43ed8d811e204e4d48164f31f613a",
+    "excerpt_sha256": "b61aefa9636247e78cc364453c6836181ee0acbcbcf153c146ea63a2c1b658da",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/deepseek.py#L154-L225"
+  },
+  {
+    "id": "E18",
+    "kind": "source",
+    "path": "deepinfer/model_executor/models/deepseek.py",
+    "start": 383,
+    "end": 411,
+    "symbol": "DeepseekForCausalLM.sample",
+    "claim": "将主模型输出交给 Sampler；EPLB 处理附着为后处理函数。",
+    "anchor": "def sample(",
+    "checks": [
+      "self.sampler(",
+      "expert_lb.step("
+    ],
+    "file_sha256": "881fe2839b34d191ffd50ca6d5b7b57443b43ed8d811e204e4d48164f31f613a",
+    "excerpt_sha256": "8e4efc7e6509445d5e6c789a54e6b2a212748b194085e66de1fb42531afd12e7",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/deepseek.py#L383-L411"
+  },
+  {
+    "id": "E19",
+    "kind": "source",
+    "path": "deepinfer/model_executor/layers/sampler.py",
+    "start": 214,
+    "end": 301,
+    "symbol": "Sampler.forward decode 分支",
+    "claim": "先验证上一轮候选，再用确认 token 生成下一轮 draft 与置信度。",
+    "anchor": "speculative_inputs = driver_inputs.speculative",
+    "checks": [
+      "self._verification(",
+      "mtp_module.decode_forward(",
+      "confidence_rates_gpu = predict_tokens.confidence_rates"
+    ],
+    "file_sha256": "81205a12e860041ffa904321b852db2d048bc038bb07d494dbb78b44b522d9a9",
+    "excerpt_sha256": "f9357100455535b951b90e01434533509d3b590beb79013a2654da1e4a51f4a7",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/sampler.py#L214-L301"
+  },
+  {
+    "id": "E20",
+    "kind": "source",
+    "path": "deepinfer/engine/llm_engine.py",
+    "start": 687,
+    "end": 763,
+    "symbol": "LLMEngine._process_model_outputs",
+    "claim": "处理 MTP 信息，scheduler.process_outputs 推进状态，再 build_request_outputs。",
+    "anchor": "def _process_model_outputs(",
+    "checks": [
+      "process_MTPInfo(",
+      "self.scheduler.process_outputs(",
+      "build_request_outputs("
+    ],
+    "file_sha256": "a636d60ca5711f6b7c21e68370c3bd9c2de6fc3f4439a7429ca4f572f0edeebe",
+    "excerpt_sha256": "705cf66d2a9b478bfa02e7e590e31642ca8caee65ff221da995521831a5b05b7",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L687-L763"
+  },
+  {
+    "id": "E21",
+    "kind": "source",
+    "path": "csrc/engine/scheduler.hpp",
+    "start": 1035,
+    "end": 1053,
+    "symbol": "Scheduler._check_stop",
+    "claim": "按 EOS、最大模型长度和 max_tokens 等停止生成；错误/中止另有分支。",
+    "anchor": "void _check_stop(",
+    "checks": [
+      "FINISHED_STOPPED",
+      "max_tokens"
+    ],
+    "file_sha256": "c14de4d5341170227b82ddf2d146d9c6a337937885a6886237aab5a7238da5db",
+    "excerpt_sha256": "f958261f12d4c77e3f0649981449289553b0c3f6e316febdf9bf7de79eec1ea0",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L1035-L1053"
+  },
+  {
+    "id": "E22",
+    "kind": "source",
+    "path": "deepinfer/engine/arg_utils.py",
+    "start": 48,
+    "end": 61,
+    "symbol": "EngineArgs.__post_init__",
+    "claim": "根据 EngineType 注入 ZOS 默认值，且尊重显式环境覆盖。",
+    "anchor": "def __post_init__(",
+    "checks": [
+      "os.environ.setdefault(",
+      "default_zero_overhead_scheduling"
+    ],
+    "file_sha256": "c28c478bd376165c073c6e0722bed8468599a2fd766ffc7aafcd4ef270af52c5",
+    "excerpt_sha256": "26a71dde3e84c96b6e75abcc9fc680d02cd4077a07dac86172307eaf223cac15",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/arg_utils.py#L48-L61"
+  },
+  {
+    "id": "E23",
+    "kind": "source",
+    "path": "deepinfer/engine/engine_type.py",
+    "start": 4,
+    "end": 17,
+    "symbol": "EngineType.default_zero_overhead_scheduling",
+    "claim": "NORMAL 同时执行 prompt/completion；NORMAL 和 COMPLETION 默认 ZOS。",
+    "anchor": "class EngineType(",
+    "checks": [
+      "NORMAL",
+      "COMPLETION"
+    ],
+    "file_sha256": "9933d83f500e3cc14c5fef0dd2fbe5c5170dbbf24df217376b0a55c4fb4ab48c",
+    "excerpt_sha256": "975e9e67462cb3eb966e16aca828e1793266c7185c6815af9c6440855cfb7821",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/engine_type.py#L4-L17"
+  },
+  {
+    "id": "E24",
+    "kind": "source",
+    "path": "csrc/engine/mtp_varlen.hpp",
+    "start": 150,
+    "end": 275,
+    "symbol": "MTPVarlen.schedule",
+    "claim": "根据历史接受率、forward 性能曲线和 sampler 时间估计选择总预算；无曲线回退到现有草稿长度。",
+    "anchor": "void schedule(const std::vector",
+    "checks": [
+      "_decode_perf_curve.empty()",
+      "mtp.prev_accept_rates",
+      "cur_expected / time_ms",
+      "seqlens_q.assign(num_seqs, 1)"
+    ],
+    "file_sha256": "164f45db4cccd6d6909dd2846e7dfffb57754b108af679443bf4bd71ec33785a",
+    "excerpt_sha256": "365411e43a845c512dae11f6d6da322c7d862b19096fce0b251a856fda190e2d",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/mtp_varlen.hpp#L150-L275"
+  },
+  {
+    "id": "E25",
+    "kind": "source",
+    "path": "deepinfer/model_executor/models/mtp/dflash.py",
+    "start": 46,
+    "end": 81,
+    "symbol": "ConfidenceHead",
+    "claim": "预测各 draft 位置的接受概率；置信度是估计，不是验证的替代品。",
+    "anchor": "class ConfidenceHead(",
+    "checks": [
+      "confidence_head_fused("
+    ],
+    "file_sha256": "12ebfb9c793062844d40e0fab17164d5365d965c318f8b9f0f4adf51b3afb684",
+    "excerpt_sha256": "4922327a864d7b50be2922ec47d42840d5fc565633f52e202691a80f3dceb38c",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/mtp/dflash.py#L46-L81"
+  },
+  {
+    "id": "E26",
+    "kind": "source",
+    "path": "deepinfer/model_executor/models/mtp/dflash.py",
+    "start": 279,
+    "end": 387,
+    "symbol": "DFlash.sample_drafts / run_drafts",
+    "claim": "生成 draft token 与置信度，写回候选状态；DSpark 方案的当前实现入口类名为 DFlash。",
+    "anchor": "def sample_drafts(",
+    "checks": [
+      "self.confidence_head(",
+      "MTPPredictInfo(",
+      "self.forward_drafts("
+    ],
+    "file_sha256": "12ebfb9c793062844d40e0fab17164d5365d965c318f8b9f0f4adf51b3afb684",
+    "excerpt_sha256": "6cdf1d8cb2cbd49b3664d97b44bdc534897280fe204a8e0b0df2055889f5db8c",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/mtp/dflash.py#L279-L387"
+  },
+  {
+    "id": "E27",
+    "kind": "source",
+    "path": "deepinfer/model_executor/layers/tilelang_ops/schedule_mtp_varlen.py",
+    "start": 11,
+    "end": 33,
+    "symbol": "compute_seqlens_q_by_confidence_rates",
+    "claim": "在设备端将总预算按最新置信度重新分配给请求；融合 remap scatter。",
+    "anchor": "def compute_seqlens_q_by_confidence_rates(",
+    "checks": [
+      "ops.compute_seqlens_q_by_confidence_rates_tl("
+    ],
+    "file_sha256": "0c6e5eb4faa087b96e0558ea4791e1b4ead1939a6cc8b086de86ca2f68bd4e88",
+    "excerpt_sha256": "854290772a5ddc44b9ace31192292ce18ee9af5d6e2a081692a02e17c640ff41",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/tilelang_ops/schedule_mtp_varlen.py#L11-L33"
+  },
+  {
+    "id": "E28",
+    "kind": "source",
+    "path": "deepinfer/worker/worker.py",
+    "start": 191,
+    "end": 246,
+    "symbol": "Worker._correct_seqlens_qk",
+    "claim": "ZOS 的 CPU 元数据滞后，使用上一轮设备采样结果修正 q/k；变长 q 回传 pinned buffer。",
+    "anchor": "def _correct_seqlens_qk(",
+    "checks": [
+      "prev.sampler_output.confidence_rates_gpu",
+      "prev.sampler_output.num_accepted_tokens_gpu",
+      "non_blocking=True"
+    ],
+    "file_sha256": "ad32e595d9ab289dff1a7709136431ac60dae709e9e5123ae42eb0ebf7c30cbb",
+    "excerpt_sha256": "5eaa70ddb296d45989d1982fd7cb2d82b5ab377b556b42ef63ae68d93e4a0e0a",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/worker.py#L191-L246"
+  },
+  {
+    "id": "E29",
+    "kind": "source",
+    "path": "deepinfer/worker/base.py",
+    "start": 274,
+    "end": 289,
+    "symbol": "WorkerBase.warm_up_model",
+    "claim": "CUDA graph 启用时捕获图；varlen 开启才采集 decode 性能曲线。",
+    "anchor": "def warm_up_model(",
+    "checks": [
+      "self.model_runner.profile_decode_perf()"
+    ],
+    "file_sha256": "40e6ca29aebd9d475eaad4b86326783f76dba2b73feaa51d86a200b7704a05ed",
+    "excerpt_sha256": "0b2df399cf1d3e9c42afb9e9cdf81e0e5be1686be57fd3784806e2dc37057dc9",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/base.py#L274-L289"
+  },
+  {
+    "id": "E30",
+    "kind": "source",
+    "path": "deepinfer/model_executor/parallel_utils/userbuffer.py",
+    "start": 7,
+    "end": 24,
+    "symbol": "UserBuffer 的依赖",
+    "claim": "通信与矩阵计算缓冲对接 DeepEP / DeepGEMM；仅展示依赖关系。",
+    "anchor": "import deep_ep",
+    "checks": [
+      "import deep_gemm",
+      "EPBuffer"
+    ],
+    "file_sha256": "580331d0e6d6b013189b1d482b242b0bf3d60be46cad1108896b4830202d33bf",
+    "excerpt_sha256": "41c4062dc1306b9c629232997ee631914acfaeb2e375401966ba5e432f317b74",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/parallel_utils/userbuffer.py#L7-L24"
+  },
+  {
+    "id": "E31",
+    "kind": "source",
+    "path": "deepinfer/model_executor/layers/attention_backend.py",
+    "start": 2,
+    "end": 128,
+    "symbol": "prefill_attn_varlen_sparse / decode_mla_mqa_sparse",
+    "claim": "attention backend 调用 FlashMLA；后端细节超出主图。",
+    "anchor": "from flash_mla import",
+    "checks": [
+      "flash_mla_sparse_fwd(",
+      "flash_mla_with_kvcache("
+    ],
+    "file_sha256": "0ad1c371863524dacf199e2e8be25b02033221c3c85c9922d39d9696c6a247d3",
+    "excerpt_sha256": "358a3c6b20686cded07ca9cabff1e248b4acf1d0afe11510d929bc5209433444",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/attention_backend.py#L2-L128"
+  },
+  {
+    "id": "E32",
+    "kind": "source",
+    "path": "deepinfer/model_executor/layers/linear.py",
+    "start": 3,
+    "end": 36,
+    "symbol": "bf16_gemm",
+    "claim": "矩阵乘后端直接调用 DeepGEMM。",
+    "anchor": "import deep_gemm",
+    "checks": [
+      "deep_gemm.bf16_gemm_nt("
+    ],
+    "file_sha256": "a8ca60074a1c868e87662240073c6c3648d66ceae953befa3b08772da2225967",
+    "excerpt_sha256": "b5d0fd64e3a9666c971e64181952a214db3996aaf01efdbc8c33ffc2d5f5959f",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/linear.py#L3-L36"
+  },
+  {
+    "id": "E33",
+    "kind": "source",
+    "path": "deepinfer/model_executor/parallel_utils/communication_op.py",
+    "start": 12,
+    "end": 47,
+    "symbol": "gather / cp_broadcast",
+    "claim": "rank 间 gather/broadcast 使用 torch.distributed；不是线上请求负载均衡。",
+    "anchor": "def gather(",
+    "checks": [
+      "dist.gather(",
+      "dist.broadcast("
+    ],
+    "file_sha256": "4d7ca2d66717a4da7f280bb2d48159aff5cc7ba0ced2f1fd6f00a11b7e8a188a",
+    "excerpt_sha256": "e0725c3032f274f11f0c44089f0032ad232f71aeab784e50857d62076940f0a8",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/parallel_utils/communication_op.py#L12-L47"
+  },
+  {
+    "id": "D01",
+    "kind": "official-doc",
+    "path": "README.md",
+    "start": 5,
+    "end": 36,
+    "symbol": "官方支持表",
+    "claim": "该版本支持 DeepSeek-V4.1-Flash、SM100 / Ascend 950，并列出特性与启用条件。",
+    "anchor": "Supported models:",
+    "checks": [
+      "DEEPINFER_ENABLE_MTP_VARLEN=1",
+      "Huawei Ascend 950"
+    ],
+    "file_sha256": "b55624158ada4dc21b882d24ded06bf82f65350b44d170877b68395712cd670d",
+    "excerpt_sha256": "f75bc6dd445c191158a1b987ddf7ff066eb2bfd37da954743b0e2c72d49e58cf",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/README.md#L5-L36"
+  },
+  {
+    "id": "D02",
+    "kind": "official-doc",
+    "path": "README.md",
+    "start": 38,
+    "end": 42,
+    "symbol": "官方发布范围",
+    "claim": "完整 KV cache system、VE/Prefill/Decode 分离部署、跨 DP 副本负载均衡未包含在发布中。",
+    "anchor": "Required for a complete inference service",
+    "checks": [
+      "A KV cache system",
+      "Load balancing"
+    ],
+    "file_sha256": "b55624158ada4dc21b882d24ded06bf82f65350b44d170877b68395712cd670d",
+    "excerpt_sha256": "4c82689c7a992dc21a746ea3faa02c5f579a5113a7dc4bae8e762c18c9c94200",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/README.md#L38-L42"
+  },
+  {
+    "id": "E34",
+    "kind": "source",
+    "path": "deepinfer/engine/llm_engine.py",
+    "start": 801,
+    "end": 829,
+    "symbol": "LLMEngine 分阶段与缓存钩子",
+    "claim": "init_pd_split / do_save_kvcache 等是扩展钩子；存在钩子不等于完整生产集成。",
+    "anchor": "def init_pd_split(",
+    "checks": [
+      "def do_save_kvcache(",
+      "def pe_do_save_kvcache("
+    ],
+    "file_sha256": "a636d60ca5711f6b7c21e68370c3bd9c2de6fc3f4439a7429ca4f572f0edeebe",
+    "excerpt_sha256": "37607eb6c4d4128a9bfa61148a336b076263f43199cc575ef2519232d8202807",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L801-L829"
+  },
+  {
+    "id": "D03",
+    "kind": "official-doc",
+    "path": "doc/inference_deployment_qa.md",
+    "start": 13,
+    "end": 27,
+    "symbol": "生产 KVCache 与基础设施",
+    "claim": "长期上下文复用是官方生产系统目标；缓存管理及负载均衡耦合内部设施，未完全开源。",
+    "anchor": "3. **Retain KV cache",
+    "checks": [
+      "not yet fully open-sourced"
+    ],
+    "file_sha256": "55d428d9958aa35ac863d7f5a2eb21528e683226784b1ac334e8068e21f2326f",
+    "excerpt_sha256": "395ddaf7b6dab38e7b72f14f242b55770050f3d97b99be497f33ccc6e32ab1e2",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/doc/inference_deployment_qa.md#L13-L27"
+  },
+  {
+    "id": "D04",
+    "kind": "official-doc",
+    "path": "doc/inference_deployment_qa.md",
+    "start": 239,
+    "end": 265,
+    "symbol": "官方 DSpark 描述",
+    "claim": "Confidence Head 与变长验证的设计说明，及其和异步调度的配合。",
+    "anchor": "## Speculative decoding",
+    "checks": [
+      "Confidence Head",
+      "CPU scheduling only fixes the total budget"
+    ],
+    "file_sha256": "55d428d9958aa35ac863d7f5a2eb21528e683226784b1ac334e8068e21f2326f",
+    "excerpt_sha256": "2247309e3f06881d56fef54bd9f98020d24cb41b11cab9e05c94818bdfb800ed",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/doc/inference_deployment_qa.md#L239-L265"
+  },
+  {
+    "id": "D05",
+    "kind": "official-doc",
+    "path": "doc/inference_deployment_qa.md",
+    "start": 266,
+    "end": 276,
+    "symbol": "官方异步调度说明",
+    "claim": "调度与后处理是 CPU 工作；目标是重叠执行以减少设备空闲。",
+    "anchor": "## Asynchronous scheduling",
+    "checks": [
+      "GPU-CPU synchronization"
+    ],
+    "file_sha256": "55d428d9958aa35ac863d7f5a2eb21528e683226784b1ac334e8068e21f2326f",
+    "excerpt_sha256": "78a533c261f276901f3f23813e3e536ccf5a29aa55a239fe225075e789b2f688",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/doc/inference_deployment_qa.md#L266-L276"
+  },
+  {
+    "id": "E35",
+    "kind": "source",
+    "path": "deepinfer/environ.py",
+    "start": 129,
+    "end": 132,
+    "symbol": "nextn / varlen 配置",
+    "claim": "最大草稿长度默认 5；ENABLE_MTP_VARLEN 描述器默认 False。",
+    "anchor": "DEEPINFER_USE_NEXTN_DECODE =",
+    "checks": [
+      "DEEPINFER_ENABLE_MTP_VARLEN = EnvVar.bool()"
+    ],
+    "file_sha256": "fe2c531989c419f0b51b169a07f5ed826dcec7f95c0c5bc3a351805923c4f218",
+    "excerpt_sha256": "4860215f2eb603611f7c23c1d419552cf7930ecb7356e7401774466362f7a608",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/environ.py#L129-L132"
+  },
+  {
+    "id": "E36",
+    "kind": "source",
+    "path": "deepinfer/worker/base.py",
+    "start": 290,
+    "end": 304,
+    "symbol": "WorkerBase.run_workers",
+    "claim": "driver 对 CP group 广播方法，再在本地调用；主图省略 follower 执行与通信。",
+    "anchor": "def run_workers(",
+    "checks": [
+      "cp_broadcast_object((method, kwargs))",
+      "return getattr(self, method)"
+    ],
+    "file_sha256": "40e6ca29aebd9d475eaad4b86326783f76dba2b73feaa51d86a200b7704a05ed",
+    "excerpt_sha256": "cf407e955baf933738c8e3d7ecc7cee85f2bd7ef12a24f6dbc271ebdcf93e4fe",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/base.py#L290-L304"
+  },
+  {
+    "id": "E37",
+    "kind": "source",
+    "path": "deepinfer/engine/llm_engine.py",
+    "start": 265,
+    "end": 270,
+    "symbol": "LLMEngine 初始化缓存管理与调度器",
+    "claim": "设备缓存已初始化后建立块/状态槽管理器，注入 decode 性能曲线。",
+    "anchor": "self.block_manager = BlockManager(",
+    "checks": [
+      "self.scheduler.decode_perf_curve"
+    ],
+    "file_sha256": "a636d60ca5711f6b7c21e68370c3bd9c2de6fc3f4439a7429ca4f572f0edeebe",
+    "excerpt_sha256": "a22de26ade86eb28dc2357550d58eb693fa9768478bdd5622e14e2cd72b1a353",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L265-L270"
+  },
+  {
+    "id": "E38",
+    "kind": "source",
+    "path": "deepinfer/worker/model_runner.py",
+    "start": 96,
+    "end": 112,
+    "symbol": "ModelRunner.load_model",
+    "claim": "get_model 得到模型对象，并检查 SWA bounded replay 保留长度覆盖 window + backtracking。",
+    "anchor": "def load_model(",
+    "checks": [
+      "get_model(self.model_config, skip_load)",
+      "DEEPINFER_MAX_BACKTRACKING_TOKENS <= envs.DEEPINFER_YOCO_PREFILL_KEEP_TOKENS"
+    ],
+    "file_sha256": "9e2e18d136c9e0c9f23905ff994e9d23afaa94aa7a133d425e7fc1fc069033ef",
+    "excerpt_sha256": "364deb4676beb8a3df6ba45b4cc8627440025abfab44669e77244d9c73892d56",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/model_runner.py#L96-L112"
+  },
+  {
+    "id": "E39",
+    "kind": "source",
+    "path": "deepinfer/engine/llm_engine.py",
+    "start": 130,
+    "end": 142,
+    "symbol": "LLMEngine 类说明",
+    "claim": "当前发布不含 online-serving wrapper，LLM 包装用于离线批量推理。",
+    "anchor": "class LLMEngine:",
+    "checks": [
+      "does not include an",
+      "online-serving wrapper"
+    ],
+    "file_sha256": "a636d60ca5711f6b7c21e68370c3bd9c2de6fc3f4439a7429ca4f572f0edeebe",
+    "excerpt_sha256": "dbc187db8cb18119f3237029ac9d726fb8bca0ab53f6436e6fc49e6941069429",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/engine/llm_engine.py#L130-L142"
+  },
+  {
+    "id": "E40",
+    "kind": "source",
+    "path": "deepinfer/ve/processor/mm_processor.py",
+    "start": 10,
+    "end": 30,
+    "symbol": "MMProcessor",
+    "claim": "存在多模态片段处理基础；不意味着视觉编码器分离部署服务已交付。",
+    "anchor": "class MMProcessor:",
+    "checks": [
+      "convert_segments_to_tensor_dict"
+    ],
+    "file_sha256": "f4cf3c1136fad6c49398b8a108f70aca2321f5777c03646be1261d2aac4a790d",
+    "excerpt_sha256": "b0c9df6907ed9c8c1dba1e2d2bccb882c90275e8ccbf82c953d17f3ed7a95c28",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/ve/processor/mm_processor.py#L10-L30"
+  },
+  {
+    "id": "E41",
+    "kind": "source",
+    "path": "csrc/engine/scheduler.hpp",
+    "start": 1196,
+    "end": 1271,
+    "symbol": "process_MTPInfo",
+    "claim": "对各位置置信度做累乘，移位保存历史预测接受率；不是直接把真实接受率当预测值。",
+    "anchor": "inline void process_MTPInfo(",
+    "checks": [
+      "accept_rate *= confidence_data",
+      "mtp.prev_accept_rates ="
+    ],
+    "file_sha256": "c14de4d5341170227b82ddf2d146d9c6a337937885a6886237aab5a7238da5db",
+    "excerpt_sha256": "7cdb1d578f0378608ee1b4ba20221172d8ff9a53c21d7d506e4f4e1a34aa4cb4",
+    "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp#L1196-L1271"
+  }
+]

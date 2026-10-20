@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "一次离线请求：阶段与循环",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1070,
+      560
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "caller",
+      "type": "frontend",
+      "label": "示例 / LLM",
+      "sublabel": "输入 · 结果聚合"
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "LLMEngine",
+      "sublabel": "step · 后处理"
+    },
+    {
+      "id": "scheduler",
+      "type": "backend",
+      "label": "Scheduler",
+      "sublabel": "C++ 批次调度"
+    },
+    {
+      "id": "worker",
+      "type": "backend",
+      "label": "Worker / Runner",
+      "sublabel": "执行与同步边界"
+    },
+    {
+      "id": "executor",
+      "type": "backend",
+      "label": "Model / Sampler",
+      "sublabel": "设备计算与候选验证"
+    }
+  ],
+  "messages": [
+    {
+      "id": "submit",
+      "from": "caller",
+      "to": "engine",
+      "y": 170,
+      "label": "token IDs + 参数入队",
+      "variant": "emphasis"
+    },
+    {
+      "id": "step",
+      "from": "caller",
+      "to": "engine",
+      "y": 200,
+      "label": "step（重复）",
+      "variant": "emphasis"
+    },
+    {
+      "id": "schedule",
+      "from": "engine",
+      "to": "scheduler",
+      "y": 230,
+      "label": "schedule",
+      "variant": "emphasis"
+    },
+    {
+      "id": "metadata",
+      "from": "scheduler",
+      "to": "engine",
+      "y": 260,
+      "label": "批次元数据 / token 预算",
+      "variant": "return"
+    },
+    {
+      "id": "dispatch",
+      "from": "engine",
+      "to": "worker",
+      "y": 290,
+      "label": "execute_model_step",
+      "variant": "emphasis"
+    },
+    {
+      "id": "forward",
+      "from": "worker",
+      "to": "executor",
+      "y": 320,
+      "label": "启动 forward",
+      "variant": "default"
+    },
+    {
+      "id": "sample",
+      "from": "worker",
+      "to": "executor",
+      "y": 350,
+      "label": "启动 sample / verify / draft",
+      "variant": "default"
+    },
+    {
+      "id": "sample-ready",
+      "from": "executor",
+      "to": "worker",
+      "y": 380,
+      "label": "采样 event 就绪后读结果",
+      "variant": "return"
+    },
+    {
+      "id": "post-process",
+      "from": "worker",
+      "to": "engine",
+      "y": 410,
+      "label": "post_process 回调",
+      "variant": "default"
+    },
+    {
+      "id": "advance",
+      "from": "engine",
+      "to": "scheduler",
+      "y": 440,
+      "label": "process_outputs / 停止判断",
+      "variant": "default"
+    },
+    {
+      "id": "collect",
+      "from": "engine",
+      "to": "caller",
+      "y": 470,
+      "label": "就绪输出；clone 后聚合",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "逻辑顺序",
+      "items": [
+        "展示数据依赖，不按默认 ZOS 的墙钟时间排列。"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "异步边界",
+      "items": [
+        "decode 的 post_process 可能处理上一轮。"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "完成与清理",
+      "items": [
+        "LLM 最后 flush 在途结果；省略多 rank 与初始化。"
+      ]
+    }
+  ]
+}

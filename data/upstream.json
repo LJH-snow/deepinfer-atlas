@@ -1,0 +1,21 @@
+{
+  "repository": "https://github.com/deepseek-ai/DeepInfer.git",
+  "commit": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+  "checked_on": "2026-10-20",
+  "timezone": "Asia/Shanghai",
+  "commit_date": "2026-10-20T19:03:13+08:00",
+  "analysis_scope": [
+    "离线示例与 LLM.generate",
+    "LLMEngine / C++ Scheduler / BlockManager",
+    "Worker / ModelRunner / model_executor",
+    "采样、设备缓存、异步调度、DSpark",
+    "官方 README 与部署 Q&A 的开源范围"
+  ],
+  "not_executed": [
+    "模型推理",
+    "GPU/NPU 性能基准",
+    "生产服务部署"
+  ],
+  "source_files": 24,
+  "evidence_count": 46
+}

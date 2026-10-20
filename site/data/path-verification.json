@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "route": {
+    "hash": "#route=llm~cache",
+    "nodes": [
+      "LLM.generate",
+      "LLMEngine",
+      "Worker / ModelRunner",
+      "Model Executor",
+      "CacheEngine"
+    ],
+    "hops": 4,
+    "cleared": true
+  },
+  "updatedAboutMobile": {
+    "width": 320,
+    "scrollWidth": 320
+  },
+  "scope": "架构图有向路径探测：LLM.generate → LLMEngine → Worker / ModelRunner → Model Executor → CacheEngine；静态拓扑路径不代表端到端同步调用。"
+}

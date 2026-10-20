@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "DeepInfer：从入口到设备执行",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1390,
+      790
+    ],
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "离线 API"
+        },
+        "backend": {
+          "label": "引擎与执行"
+        },
+        "database": {
+          "label": "缓存与块管理"
+        },
+        "external": {
+          "label": "示例入口"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "offline",
+      "type": "external",
+      "label": "离线示例",
+      "sublabel": "输入与参数",
+      "pos": [
+        45,
+        100
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "frontend",
+      "label": "LLM.generate",
+      "sublabel": "分词 · 提交 · 循环",
+      "pos": [
+        405,
+        100
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "LLMEngine",
+      "sublabel": "step 与输出协调",
+      "pos": [
+        765,
+        100
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "scheduler",
+      "type": "backend",
+      "label": "Scheduler",
+      "sublabel": "C++ 批次与 token 预算",
+      "pos": [
+        1125,
+        100
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "blocks",
+      "type": "database",
+      "label": "BlockManager",
+      "sublabel": "块与状态槽生命周期",
+      "pos": [
+        1125,
+        360
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "worker",
+      "type": "backend",
+      "label": "Worker / ModelRunner",
+      "sublabel": "forward · sample · 回调",
+      "pos": [
+        765,
+        360
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "model",
+      "type": "backend",
+      "label": "Model Executor",
+      "sublabel": "模型 · 采样 · draft",
+      "pos": [
+        405,
+        360
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "cache",
+      "type": "database",
+      "label": "CacheEngine",
+      "sublabel": "设备 KV 与 state 张量",
+      "pos": [
+        405,
+        620
+      ],
+      "size": [
+        235,
+        76
+      ]
+    },
+    {
+      "id": "kernels",
+      "type": "backend",
+      "label": "算子与通信",
+      "sublabel": "FlashMLA · DeepEP 等",
+      "pos": [
+        45,
+        360
+      ],
+      "size": [
+        235,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "entry-submit",
+      "from": "offline",
+      "to": "llm",
+      "label": "generate",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "entry-engine",
+      "from": "llm",
+      "to": "engine",
+      "label": "add_request / step",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "engine-schedule",
+      "from": "engine",
+      "to": "scheduler",
+      "label": "schedule",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "scheduler-blocks",
+      "from": "scheduler",
+      "to": "blocks",
+      "label": "分配 / 回收",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 76
+    },
+    {
+      "id": "engine-worker",
+      "from": "engine",
+      "to": "worker",
+      "label": "execute_model_step",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 76
+    },
+    {
+      "id": "worker-model",
+      "from": "worker",
+      "to": "model",
+      "label": "forward / sample",
+      "variant": "emphasis",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "model-cache",
+      "from": "model",
+      "to": "cache",
+      "label": "读写 KV / state",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 76
+    },
+    {
+      "id": "model-kernels",
+      "from": "model",
+      "to": "kernels",
+      "label": "算子与通信依赖",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "right"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "控制与资源",
+      "items": [
+        "绿色实线：控制调用；灰色实线：数据/资源。"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "解释性简化",
+      "items": [
+        "紫色虚线：实现依赖，不表示同步调用。"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "阅读边界",
+      "items": [
+        "折叠 rank、回调和循环；Model Executor 为包。"
+      ]
+    }
+  ]
+}

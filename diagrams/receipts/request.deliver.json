@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/Admin/Desktop/deepinfer-atlas/diagrams/specs/request.json",
+  "output": "/Users/Admin/Desktop/deepinfer-atlas/site/diagrams/request.html",
+  "specification": {
+    "sha256": "d75de908981ef6e69fd0c3043f7871934268f59fb3ea0b36ea34d79861e49351",
+    "bytes": 3325
+  },
+  "artifact": {
+    "sha256": "8b2504f026f30581c602d6d24cc55d2f4f9b7c0620555b61626c03951889308c",
+    "bytes": 709178
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "counts": {
+    "html_documents": 11,
+    "local_references": 218,
+    "pinned_source_urls": 48,
+    "verified_source_excerpts": 46,
+    "markdown_references": 48,
+    "evidence_records": 46,
+    "diagram_node_mappings": 23,
+    "diagram_relationship_mappings": 19
+  },
+  "errors": []
+}

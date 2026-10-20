@@ -1,0 +1,62 @@
+{
+  "ok": true,
+  "subpath": [
+    {
+      "page": "index",
+      "pathname": "/site/index.html",
+      "styled": true,
+      "missingImages": []
+    },
+    {
+      "page": "architecture",
+      "pathname": "/site/architecture.html",
+      "styled": true,
+      "missingImages": []
+    },
+    {
+      "page": "request",
+      "pathname": "/site/request.html",
+      "styled": true,
+      "missingImages": []
+    },
+    {
+      "page": "scope",
+      "pathname": "/site/scope.html",
+      "styled": true,
+      "missingImages": []
+    },
+    {
+      "page": "performance",
+      "pathname": "/site/performance.html",
+      "styled": true,
+      "missingImages": []
+    },
+    {
+      "page": "source-map",
+      "pathname": "/site/source-map.html",
+      "styled": true,
+      "missingImages": []
+    },
+    {
+      "page": "evidence",
+      "pathname": "/site/evidence.html",
+      "styled": true,
+      "missingImages": []
+    },
+    {
+      "page": "about",
+      "pathname": "/site/about.html",
+      "styled": true,
+      "missingImages": []
+    }
+  ],
+  "subpathNavigation": true,
+  "fontFallback": {
+    "blockedFonts": [
+      "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    ],
+    "nodeCount": 9,
+    "zoomClicked": true
+  },
+  "failures": []
+}

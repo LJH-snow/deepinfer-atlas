@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "开源引擎与完整服务的边界",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1330,
+      790
+    ]
+  },
+  "components": [
+    {
+      "id": "released-entry",
+      "type": "frontend",
+      "label": "离线推理",
+      "sublabel": "LLM · 示例",
+      "pos": [
+        65,
+        145
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "released-runtime",
+      "type": "backend",
+      "label": "引擎与模型执行",
+      "sublabel": "调度 · 采样 · 设备缓存",
+      "pos": [
+        65,
+        365
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "released-compute",
+      "type": "backend",
+      "label": "算子与并行",
+      "sublabel": "EP / DP / CP · EPLB",
+      "pos": [
+        65,
+        585
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "hooks-types",
+      "type": "backend",
+      "label": "分阶段引擎类型",
+      "sublabel": "NORMAL / PROMPT / COMPLETION",
+      "pos": [
+        505,
+        145
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "hooks-cache",
+      "type": "database",
+      "label": "缓存操作与扩展点",
+      "sublabel": "布局 · copy · 保存钩子",
+      "pos": [
+        505,
+        365
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "hooks-vision",
+      "type": "backend",
+      "label": "视觉处理执行",
+      "sublabel": "模型 / processor 可用",
+      "pos": [
+        505,
+        585
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "missing-store",
+      "type": "external",
+      "label": "KVCache Storage",
+      "sublabel": "长期复用服务尚未提供",
+      "pos": [
+        945,
+        145
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "missing-routing",
+      "type": "external",
+      "label": "跨 DP 负载均衡",
+      "sublabel": "prefill / decode 路由未提供",
+      "pos": [
+        945,
+        365
+      ],
+      "size": [
+        320,
+        80
+      ]
+    },
+    {
+      "id": "missing-service",
+      "type": "external",
+      "label": "完整在线服务",
+      "sublabel": "在线 wrapper 与分离部署集成",
+      "pos": [
+        945,
+        585
+      ],
+      "size": [
+        320,
+        80
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "已发布：可直接研究",
+      "wraps": [
+        "released-entry",
+        "released-runtime",
+        "released-compute"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "已有基础：仍需集成",
+      "wraps": [
+        "hooks-types",
+        "hooks-cache",
+        "hooks-vision"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "完整服务：尚未包含",
+      "wraps": [
+        "missing-store",
+        "missing-routing",
+        "missing-service"
+      ],
+      "pad": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "源码确认",
+      "items": [
+        "设备 KV / state 张量与块管理已在仓库。"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "官方文档描述",
+      "items": [
+        "长期缓存存储、跨 DP 路由不在本次发布。"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "解释范围",
+      "items": [
+        "分类图无调用连线；所有结论绑定分析版本。"
+      ]
+    }
+  ]
+}

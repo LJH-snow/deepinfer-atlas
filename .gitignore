@@ -1,0 +1,9 @@
+.upstream/
+.dist-tmp/
+dist/
+node_modules/
+.DS_Store
+.playwright-cli/
+output/
+__pycache__/
+*.pyc

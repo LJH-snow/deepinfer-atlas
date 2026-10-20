@@ -1,0 +1,56 @@
+<h2 id="overview">把优化放回执行路径</h2>
+<p>本页讨论两类浪费：<strong>设备等 CPU</strong>，以及<strong>验证了很可能被拒绝的候选</strong>。前者由异步调度减少空隙，后者由 DSpark 的置信度调度分配验证计算。两者相互配合，但不是同一种优化，也不保证在所有负载下都更快。</p>
+<p>以下图形都是解释性示意，格子宽度不代表测量时间，示例预算不代表默认配置。本项目没有运行 GPU / NPU 推理或复测官方基准。</p>
+<h2 id="async">01 / CPU 与设备的异步调度</h2>
+<h3>解决的问题：设备算完，还要等 CPU</h3>
+<p>同步路径中，CPU 先选批次，设备执行 forward / sample；CPU 等到结果后做输出后处理，再准备下一批。后处理和下一次调度期间，设备可能空闲。官方称异步批次调度为 ZOS（Zero-overhead Scheduling），目标是把这些 CPU 工作与设备计算重叠。</p>
+<div class="source-links">{{src:D05}} {{src:E13}}</div>
+<figure class="timeline">
+  <h3>ZOS decode 的跨步关系</h3>
+  <div class="track"><span class="lane">CPU</span><div class="event cpu">schedule(N)<small>使用当前可见状态</small></div><div class="event cpu">launch forward(N)<small>随后处理 N−1 输出</small></div><div class="event cpu">launch sample(N)<small>保存本步在途状态</small></div></div>
+  <div class="track"><span class="lane">设备</span><div class="event">上一轮计算<small>CPU 可调下一批</small></div><div class="event">forward(N)<small>与 CPU 后处理可重叠</small></div><div class="event">sample(N)<small>event 标记结果就绪</small></div></div>
+  <figcaption>对齐仅帮助理解潜在重叠，不定义精确同时开始时间。设备 stream 仍约束计算顺序；读取采样结果时仍有同步。N 的结果通常在下一次 Worker 调用处理。</figcaption>
+</figure>
+<h3>核心过程：先发计算，再消费上一轮输出</h3>
+<ol>
+  <li><code>LLMEngine.step()</code> 先调用 C++ Scheduler 选批次，再下发 <code>execute_model_step</code>。</li>
+  <li>Worker 先启动当前步主模型 forward；ModelRunner 的 forward 和 sample 方法都用 <code>forbid_cuda_sync()</code> 约束内部同步。</li>
+  <li>随后 Worker 才调用 <code>_post_process_step(prev_step_state)</code>。这个边界会等待上一轮 sampling event；等待和后处理发生在本轮 forward 已经启动之后。</li>
+  <li>启动当前步采样并记录 event。ZOS decode 保存当前状态，留给下一轮后处理；prefill 或关闭 ZOS 时在本轮处理。</li>
+  <li>生成循环结束时 <code>flush_inflight_reqs()</code> 排空尚未处理的输出。</li>
+</ol>
+<div class="source-links">{{src:E06}} {{src:E13}} {{src:E14}} {{src:E15}} {{src:E16}} {{src:E04}}</div>
+<h3>为什么元数据还要修正</h3>
+<p>提前调度时，CPU 还没有上一轮完整采样结果。Worker 的 <code>_correct_seqlens_qk()</code> 根据上一轮设备上的 accepted token 数和 draft 信息修正长度。启用变长验证时，还在 GPU 端用新置信度重新分配 query 长度，并回写 pinned buffer（固定在主存、便于异步传输的缓冲区）。这使“先调度”与“使用正确的实际长度”能衔接起来。</p>
+<div class="source-links">{{src:E28}} {{src:E27}}</div>
+<div class="callout"><p><strong>适用条件与解释范围：</strong>NORMAL / COMPLETION 类型默认设置 ZOS，显式 <code>DEEPINFER_ZERO_OVERHEAD_SCHEDULING=0</code> 可覆盖。这里核对了 Python/C++ 主路径，没有模拟所有多 rank、NPU 后端或抢占组合。源码方法名含 CUDA / GPU 时按原名引用，不据此声称所有后端内部完全相同。</p></div>
+<div class="source-links">{{src:E22}} {{src:E23}}</div>
+<h2 id="dspark">02 / DSpark：把验证预算用在更有希望的候选上</h2>
+<h3>解决的问题：生成草稿不等于值得全部验证</h3>
+<p><strong>推测解码</strong>（speculative decoding）先生成多个 draft token，再由主模型验证。若所有请求都固定验证同样长的草稿，就可能把计算花在低接受概率的位置。官方称 DSpark 的方案使用 Confidence Head 预测接受概率，再据硬件性能曲线分配验证预算。当前代码的 draft 模块入口类名为 <code>DFlash</code>；两种名称处于方案与实现的不同层次。</p>
+<div class="source-links">{{src:D04}} {{src:E25}} {{src:E26}}</div>
+<ol class="flow" aria-label="DSpark 的简化循环">
+  <li><strong>1. 生成下一轮草稿</strong><span>DFlash 输出 draft IDs 与各位置置信度。</span></li>
+  <li><strong>2. 选择总预算</strong><span>C++ 结合历史预测与时间估计，选择 total_q。</span></li>
+  <li><strong>3. 分配验证长度</strong><span>ZOS 使用设备上的新置信度修正每条 seqlen_q。</span></li>
+  <li><strong>4. 实际验证后输出</strong><span>Sampler 决定接受的 token，并生成再下一轮草稿。</span></li>
+</ol>
+<p class="diagram-note">这是跨轮循环的解释性简化。这里的顺序不能理解为每次 Python step 都依次拿到了当轮全部 CPU 结果。</p>
+<h3>源码中的关键过程</h3>
+<dl class="module-map">
+  <div><dt>置信度 ≠ 验证结果</dt><dd><code>ConfidenceHead</code> 输出各候选位置的估计接受概率。<code>process_MTPInfo()</code> 将它们累乘成前缀预测接受率并保留历史。主模型的实际验证仍由 Sampler 执行，不能用高置信度绕过验证。<div class="source-links">{{src:E25}} {{src:E41}} {{src:E19}}</div></dd></div>
+  <div><dt>CPU 决定总预算</dt><dd><code>MTPVarlen.schedule()</code> 对候选的预测收益排序，比较“预期有效 token 数 / 估计 forward 与 sampler 时间”。代码用 N−2 轮的预测接受率决定预算，以保持时序约束；没有 decode 性能曲线时回退到现有 draft 长度。这里选择的是 query token 总量，不是一个对所有请求相同的固定草稿长度。<div class="source-links">{{src:E24}} {{src:E29}}</div></dd></div>
+  <div><dt>设备细分给请求</dt><dd>在 ZOS 下，CPU 调度时最新置信度还未回传。<code>compute_seqlens_q_by_confidence_rates()</code> 在设备上融合 remap、前缀概率累乘与排序分配，将固定总预算落到各请求的 <code>seqlens_q</code>。每条请求保留基础 query 位置，再分配被选中的候选位置。<div class="source-links">{{src:E28}} {{src:E27}}</div></dd></div>
+  <div><dt>主模型验证与反馈</dt><dd>decode 的 Sampler 先 <code>_verification()</code>，再 <code>mtp_module.decode_forward()</code> 产生下一轮候选与置信度。Worker 的 event 就绪后，Engine 更新调度状态并将实际 forward / sample 时间反馈给预算估计。<div class="source-links">{{src:E19}} {{src:E07}}</div></dd></div>
+</dl>
+<h3>一个只解释分配含义的例子</h3>
+<div class="table-wrap"><table><caption>虚构示例，数字不来自性能测试</caption><thead><tr><th scope="col">请求</th><th scope="col">可用 draft 位置</th><th scope="col">选择的 draft 前缀</th><th scope="col">本步 query 位置数</th></tr></thead><tbody><tr><td>A</td><td>3</td><td>前 3 个</td><td>1 + 3 = 4</td></tr><tr><td>B</td><td>3</td><td>前 1 个</td><td>1 + 1 = 2</td></tr><tr><td>C</td><td>3</td><td>0 个</td><td>1 + 0 = 1</td></tr></tbody></table></div>
+<p>这个例子只说明 <code>total_q = 7</code> 如何对应不同请求的验证长度。它没有给出可复现的置信度排序输入，也没有证明这组长度最优。<strong>选中验证的数量与最后被接受的数量不同。</strong></p>
+<div class="callout"><p><strong>启用条件：</strong>草稿长度由 <code>DEEPINFER_USE_NEXTN_DECODE</code> 控制，默认最大值为 5；变长验证需要 <code>DEEPINFER_ENABLE_MTP_VARLEN=1</code>。仅保留默认 nextn 不代表已启用变长验证。启动曲线采集路径还依赖 CUDA graph 分支；无曲线的回退行为见 C++ 实现。效果取决于硬件、并发、上下文、置信度质量和 draft 开销。</p></div>
+<div class="source-links">{{src:E35}} {{src:E29}} {{src:E24}} {{src:D01}}</div>
+<h2 id="other">还有哪些值得继续读</h2>
+<p><strong>SWA</strong>（Sliding Window Attention，滑动窗口注意力）的 bounded replay 只保留有界后缀以减少 decoder 侧 prefill 工作；保留长度必须覆盖窗口与最大回退长度。官方说明和 ModelRunner 的条件检查可作为下一入口。底层 attention、矩阵乘和专家通信则分别从 FlashMLA、DeepGEMM、DeepEP 的接入点进入。</p>
+<div class="source-links">{{src:D01}} {{src:E38}} {{src:E31}} {{src:E32}} {{src:E30}}</div>
+<h2 id="measurement">性能描述应该怎样验证</h2>
+<p>本图谱只给出机制和可核查入口，不提供“已复测加速比”。上游 README 的 prefill / decode 图说明了所用 SM100 数量，并给出 sweep 脚本；官方 Q&A 的动态验证表则有自身并发与并行配置。若引用这些数字，必须连同各自测试条件引用，不能把一种配置的收益作为本机或任意部署的承诺。</p>
+<p>要做自己的实验，先固定本页的 commit、模型 checkpoint、硬件拓扑、并发和长度分布，再分别切换 ZOS、varlen 等配置。保留运行日志、吞吐与延迟分布后，才能讨论收益。<a href="source-map.html#performance-route">继续沿优化路线读源码</a>。</p>

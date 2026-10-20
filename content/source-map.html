@@ -1,0 +1,27 @@
+<h2 id="choose">按你想回答的问题选路线</h2>
+<p>先读可运行示例和 Python 入口，再进入 C++ 状态与设备执行，最后读优化。每个链接都固定在 <code>{{short_commit}}</code>，避免随着上游更新漂移。下面的阅读顺序是<strong>解释性建议</strong>，每个入口和调用关系则有源码证据。</p>
+<div class="source-map-intro"><p><a href="#first-request">路线 A：第一次接触，跟一次请求</a><br><a href="#runtime">路线 B：理解执行与资源</a><br><a href="#performance-route">路线 C：深入异步与 DSpark</a></p></div>
+<h2 id="first-request">路线 A / 先走通一次离线请求</h2>
+<ol class="route">
+  <li><div><strong>从 <code>examples/offline_inference.py</code> 开始</strong><p><b>为什么读：</b>知道真实调用者交给引擎什么。<b>关注：</b>create_llm、输入准备、generate、decode 与 close，及最外层 launch_dp。<b>下一步：</b>跟进 generate，而不是先钻模型每一层。</p><div class="source-links">{{src:E01}}</div></div></li>
+  <li><div><strong>读 <code>LLM.generate → _add_request</code></strong><p><b>为什么读：</b>看见文本如何变成请求。<b>关注：</b>tokenizer、采样参数复制、请求 ID 和 add_request。<b>下一步：</b>找到引擎把 Sequence 放进队列的位置。</p><div class="source-links">{{src:E02}} {{src:E03}} {{src:E05}}</div></div></li>
+  <li><div><strong>读 <code>LLM._run_engine → LLMEngine.step</code></strong><p><b>为什么读：</b>理解生成是循环而非一次模型调用。<b>关注：</b>unfinished、step、flush、clone 和最终排序。<b>下一步：</b>跟 step 里的 scheduler.schedule 和 execute_model_step。</p><div class="source-links">{{src:E04}} {{src:E06}} {{src:E07}}</div></div></li>
+  <li><div><strong>用输出路径把环闭合</strong><p><b>为什么读：</b>区分候选、已接受 token 和返回对象。<b>关注：</b>process_MTPInfo、process_outputs、build_request_outputs、_check_stop。<b>下一步：</b>回到调用者确认它拿到的是 token 对象列表还是可选解码文本。</p><div class="source-links">{{src:E20}} {{src:E21}} {{src:E04}}</div></div></li>
+</ol>
+<h2 id="runtime">路线 B / 读批次、设备执行和缓存</h2>
+<ol class="route">
+  <li><div><strong><code>Scheduler._schedule / _schedule_decode</code></strong><p><b>为什么读：</b>调度决定哪些工作能开始。<b>关注：</b>waiting/running、prompt 与 decode 分支、块不足、seqlens_q 和预算。<b>下一步：</b>沿 allocate / _append_slot 读块管理。</p><div class="source-links">{{src:E08}} {{src:E09}} {{src:E10}}</div></div></li>
+  <li><div><strong><code>BlockManager → CacheEngine</code></strong><p><b>为什么读：</b>分开“块编号生命周期”和“设备张量布局”。<b>关注：</b>引用计数、pin/free、gpu_blocks、state blocks、GPUCacheInterface。<b>下一步：</b>在 ModelRunner 中观察缓存如何传给模型。不要在这里寻找完整长期缓存服务。</p><div class="source-links">{{src:E11}} {{src:E12}} {{src:E37}}</div></div></li>
+  <li><div><strong><code>Worker.execute_model_step → ModelRunner</code></strong><p><b>为什么读：</b>找到实际 launch 和同步的位置。<b>关注：</b>当前 forward、上一轮后处理、当前 sample、event 与 prev_step_state；以及 graph replay 和直接调用的分支。<b>下一步：</b>沿 self.model / self.model.sample 到执行层。</p><div class="source-links">{{src:E13}} {{src:E14}} {{src:E15}} {{src:E16}}</div></div></li>
+  <li><div><strong><code>DeepseekModel / DeepseekForCausalLM → Sampler</code></strong><p><b>为什么读：</b>把运行时协调与模型数学计算接起来。<b>关注：</b>forward、sample、MTP module、verification 和 draft。<b>下一步：</b>按兴趣选择 attention_backend、linear 或 userbuffer 的内核接入点。</p><div class="source-links">{{src:E17}} {{src:E18}} {{src:E19}}</div></div></li>
+  <li><div><strong>深入算子和 rank 通信</strong><p><b>为什么读：</b>定位真正的计算和交换，而非只看参数容器。<b>关注：</b>FlashMLA 调用、DeepGEMM 调用、DeepEP 缓冲与 torch.distributed 的 group。<b>下一步：</b>在自己的硬件上收集 trace，再选择需要研究的依赖库；主图不展开它们的内核内部。</p><div class="source-links">{{src:E31}} {{src:E32}} {{src:E30}} {{src:E33}} {{src:E36}}</div></div></li>
+</ol>
+<h2 id="performance-route">路线 C / 深入异步与 DSpark</h2>
+<ol class="route">
+  <li><div><strong>先核对配置入口</strong><p><b>为什么读：</b>知道运行的是哪条分支。<b>关注：</b>EngineArgs 对 ZOS 的默认设置、EngineType、nextn 与 varlen 的独立开关。<b>下一步：</b>跟 Worker 中延后后处理的条件。</p><div class="source-links">{{src:E22}} {{src:E23}} {{src:E35}}</div></div></li>
+  <li><div><strong>从 <code>prev_step_state</code> 追跨步依赖</strong><p><b>为什么读：</b>知道 CPU 为什么能提前调度。<b>关注：</b>event 等待位置、_correct_seqlens_qk 的 remap 与实际接受长度。<b>下一步：</b>读预算选择，区分旧 CPU 状态和新设备状态。</p><div class="source-links">{{src:E13}} {{src:E14}} {{src:E28}}</div></div></li>
+  <li><div><strong><code>MTPVarlen.schedule</code> 与设备长度分配</strong><p><b>为什么读：</b>理解“每次验证多少”怎样由预测收益与时间估计共同决定。<b>关注：</b>历史轮次配对、性能曲线回退、CPU total_q、GPU seqlens_q。<b>下一步：</b>追预测来自哪里、实际验证如何反馈。</p><div class="source-links">{{src:E24}} {{src:E27}} {{src:E29}}</div></div></li>
+  <li><div><strong><code>ConfidenceHead / DFlash → Sampler._verification</code></strong><p><b>为什么读：</b>闭合“提出候选、预测、分配、验证、再提候选”的环。<b>关注：</b>置信度累乘与历史移位；验证结果不是置信度本身；accepted 长度如何更新调度。<b>下一步：</b>回到 Worker 的事件计时与 Engine 的 update_mtp_runtime，设计自己的实验。</p><div class="source-links">{{src:E25}} {{src:E26}} {{src:E41}} {{src:E19}} {{src:E07}}</div></div></li>
+</ol>
+<h2 id="avoid">阅读时保留这几个区分</h2>
+<dl class="glossary"><div><dt>文件夹名字不等于一个运行时组件</dt><dd><code>model_executor/</code> 是执行实现所在包；不能据其名称画出一个未经确认的 ModelExecutor 类。</dd></div><div><dt>支持能力不等于默认开启</dt><dd>nextn、varlen、batch-invariant、确定性采样各有自己的条件。先看示例与配置，再分析选中分支。</dd></div><div><dt>模块名或注释不等于服务已经交付</dt><dd>CacheEngine 的旧类说明提到 CPU cache / swapping；结论要以当前实际分配实现和官方发布范围为准。</dd></div><div><dt>不确定时回到证据，而不是填补内部细节</dt><dd>没有运行模型的结论标为静态核对；完整服务的未公开组件只引用官方说明。</dd></div></dl>
